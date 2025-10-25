@@ -1,93 +1,82 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import "./App.css";
-import BarcodeScanner from "./BarCodeScanner";
-import { MantineProvider } from "@mantine/core";
-import {
-  QueryClient,
-  QueryClientProvider,
-  useQuery,
-} from "@tanstack/react-query";
+import { ActionIcon, MantineProvider } from "@mantine/core";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { isIsbn } from "./isbn/isIsbn";
+import { IsbnBookInfo } from "./BookInfo";
+import { Scanner } from "./scanner/Scanner";
+import { Camera, StopCircle } from "lucide-react";
 
 const queryClient = new QueryClient();
+
 function App() {
-  const [scannedBarCodes, setScannedBarCodes] = useState<string[]>([]);
-  const onDetect = useCallback((code: string) => {
+  const [isbnCodes, setIsbnCodes] = useState<string[]>([]);
+  const [notIsbnCodes, setNotIsbnCodes] = useState<string[]>([]);
+  const [scanning, setScanning] = useState(false);
+  const onDetected = useCallback((code: string) => {
     console.log(code);
-    setScannedBarCodes((codes: string[]) => {
-      if (codes.includes(code)) {
-        return codes;
-      }
-      return [...codes, code];
-    });
+    if (isIsbn(code)) {
+      setIsbnCodes((codes: string[]) => {
+        if (codes.includes(code)) {
+          return codes;
+        }
+        return [...codes, code];
+      });
+    } else {
+      setNotIsbnCodes((codes: string[]) => {
+        if (codes.includes(code)) {
+          return codes;
+        }
+        return [...codes, code];
+      });
+    }
   }, []);
+
   return (
     <>
       <QueryClientProvider client={queryClient}>
         <MantineProvider>
-          <h1>Scanner</h1>
-          <BarcodeScanner onDetected={onDetect} />
+          <div className="scanner-actions">
+            {scanning ? (
+              <ActionIcon
+                size={42}
+                variant="default"
+                aria-label="Stop scanning"
+                onClick={() => setScanning(false)}
+              >
+                <StopCircle size={24} />
+              </ActionIcon>
+            ) : (
+              <ActionIcon
+                size={42}
+                variant="default"
+                aria-label="Start scanning"
+                onClick={() => setScanning(true)}
+              >
+                <Camera size={14} />
+              </ActionIcon>
+            )}
+          </div>
+          {scanning && <Scanner onDetected={onDetected} />}
+          <div>Livres scannés ({isbnCodes.length})</div>
           <ul>
-            {scannedBarCodes.map((code, index) => (
+            {isbnCodes.map((code, index) => (
               <li key={index}>
-                <BookInfo isbn={code} />
+                <IsbnBookInfo isbn={code} />
               </li>
             ))}
           </ul>
+          <details>
+            <summary>Autres codes scannés ({notIsbnCodes.length})</summary>
+            <ul>
+              {notIsbnCodes.map((code, index) => (
+                <li key={index}>{code}</li>
+              ))}
+            </ul>
+          </details>
         </MantineProvider>
       </QueryClientProvider>
     </>
   );
 }
-
-type BookData = {
-  title: string;
-  subtitle?: string;
-  authors: string[];
-  description?: string;
-  publishedDate: string;
-  industryIdentifiers: { type: string; identifier: string }[];
-  pageCount: number;
-  dimensions?: { height: string; width: string; thickness: string };
-  imageLinks?: {
-    thumbnail: string;
-    smallThumbnail: string;
-    small: string;
-    medium: string;
-  };
-};
-type VolumeListResponse = {
-  items: { volumeInfo: BookData }[];
-};
-
-function BookInfo({ isbn }: { isbn: string }) {
-  const query = useQuery({
-    queryKey: ["book-info", isbn],
-    queryFn: async () => {
-      const response = await fetch(
-        `https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`
-      );
-      const volumes = (await response.json()) as VolumeListResponse;
-      if (volumes.items.length === 0) {
-        throw new Error("No book found for ISBN " + isbn);
-      }
-      return volumes.items[0].volumeInfo;
-    },
-  });
-  if (query.isLoading) {
-    return <div>#{isbn} ...</div>;
-  } else if (query.isError) {
-    return (
-      <div>
-        #{isbn} Error: {(query.error as Error).message}
-      </div>
-    );
-  } else {
-    return (
-      <div>
-        {query.data?.title} ({query.data?.authors})
-      </div>
-    );
-  }
-}
-
 export default App;

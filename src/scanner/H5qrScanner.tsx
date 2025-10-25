@@ -1,33 +1,30 @@
 // BarcodeScanner.tsx
 import { useEffect, useMemo } from "react";
 import { Html5QrcodeScanner, type Html5QrcodeResult } from "html5-qrcode";
-
-type Props = {
-  onDetected: (code: string) => void;
-  scannerId?: string;
-};
+import type { ScannerProps } from "./ScannerProps";
+import "./H5qrScanner.css";
 
 let incrementId = 1;
 
-export default function BarcodeScanner({ onDetected }: Props) {
+export default function H5qrScanner({ onDetected }: ScannerProps) {
   const scannerId = useMemo(() => "scanner-" + incrementId++, []);
   useEffect(() => {
-    console.log(
-      "initialize scanner " + scannerId + " onDetected=" + onDetected
-    );
     const scanner = new Html5QrcodeScanner(
       scannerId,
-      { fps: 5, qrbox: { width: 300, height: 200 } },
+      {
+        fps: 5,
+        qrbox: { width: 300, height: 200 },
+        showTorchButtonIfSupported: true,
+      },
       false
     );
-
     scanner.render(
       (decodedText: string, result: Html5QrcodeResult) => {
-        console.log(decodedText, result);
+        console.log(decodedText, result.result.bounds);
         onDetected(decodedText);
       },
       (err: string) => {
-        console.log("QR scan error", err);
+        console.debug("QR scan error", err);
       }
     );
 
