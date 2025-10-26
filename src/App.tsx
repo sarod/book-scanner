@@ -12,15 +12,10 @@ import {
 } from "./api/isbn/fetchIsbnBookData";
 import { matchBookList, type MatchBookListResult } from "./matchBookList";
 import { BookList } from "./BookList";
-import Papa from "papaparse";
+import type { ImportedBookData } from "./ImportedBookData";
+import { parseBookFiles } from "./parseBookFiles";
 
 const queryClient = new QueryClient();
-
-export type ImportedBookData = {
-  title: string;
-  authors: string[];
-  matchedScannedIsbnBook?: IsbnBookData;
-};
 
 function App() {
   const [importedBooks, setImportedBooks] = useState<ImportedBookData[]>([]);
@@ -56,32 +51,11 @@ function App() {
       });
     }
   }, []);
-  const onUpload = useCallback((f: File | null) => {
-    if (f) {
-      Papa.parse(f, {
-        header: true,
-        complete: function (results, file) {
-          console.log("Parsing complete:", results, file);
-
-          const titleField = results.meta.fields?.find(
-            (f) =>
-              f.toLowerCase().startsWith("titre") ||
-              f.toLowerCase().startsWith("title")
-          );
-          const books = results.data
-            .map((row) => (row as { [key: string]: string })[titleField!])
-            .filter((t) => !!t)
-            .map((t) => ({
-              title: t,
-              authors: [],
-            }));
-          setImportedBooks(books);
-        },
-        error: function (error, file) {
-          console.log("Parsing failed:", error, file);
-        },
-      });
-    }
+  const onUpload = useCallback((files: File[]) => {
+    parseBookFiles(files).then(
+      (books) => setImportedBooks(books),
+      (err) => console.log(err)
+    );
   }, []);
 
   return (
@@ -112,6 +86,7 @@ function App() {
               </ActionIcon>
             )}
             <FileInput
+              multiple
               onChange={onUpload}
               accept="text/csv,text/plain"
               placeholder="Upload CSV"

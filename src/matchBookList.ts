@@ -1,5 +1,5 @@
 import type { IsbnBookData } from "./api/isbn/IsbnBookData";
-import type { ImportedBookData } from "./App";
+import type { ImportedBookData } from "./ImportedBookData";
 
 export type ExtendedImportedBookData = ImportedBookData & {
   matchedIsbnBook?: IsbnBookData;
