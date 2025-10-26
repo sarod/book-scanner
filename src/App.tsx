@@ -1,33 +1,85 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import "./App.css";
-import { ActionIcon, MantineProvider } from "@mantine/core";
+import { ActionIcon, FileInput, MantineProvider } from "@mantine/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { isIsbn } from "./isbn/isIsbn";
-import { IsbnBookInfo } from "./BookInfo";
 import { Scanner } from "./scanner/Scanner";
 import { Camera, StopCircle } from "lucide-react";
+import type { IsbnBookData } from "./api/isbn/IsbnBookData";
+import {
+  fetchIsbnBookData,
+  fetchIsbnBookDataQueryKey,
+} from "./api/isbn/fetchIsbnBookData";
+import { matchBookList, type MatchBookListResult } from "./matchBookList";
+import { BookList } from "./BookList";
+import Papa from "papaparse";
 
 const queryClient = new QueryClient();
 
+export type ImportedBookData = {
+  title: string;
+  authors: string[];
+  matchedScannedIsbnBook?: IsbnBookData;
+};
+
 function App() {
-  const [isbnCodes, setIsbnCodes] = useState<string[]>([]);
-  const [notIsbnCodes, setNotIsbnCodes] = useState<string[]>([]);
+  const [importedBooks, setImportedBooks] = useState<ImportedBookData[]>([]);
+  const [, setIsbnCodes] = useState<string[]>([]);
   const [scanning, setScanning] = useState(false);
+
+  const [isbnBooks, setIsbnBooks] = useState<IsbnBookData[]>([]);
+  const matchedBookList: MatchBookListResult = useMemo(
+    () => matchBookList(importedBooks, isbnBooks),
+    [isbnBooks, importedBooks]
+  );
   const onDetected = useCallback((code: string) => {
-    console.log(code);
     if (isIsbn(code)) {
       setIsbnCodes((codes: string[]) => {
         if (codes.includes(code)) {
           return codes;
         }
+        queryClient
+          .fetchQuery({
+            queryKey: fetchIsbnBookDataQueryKey(code),
+            queryFn: () => fetchIsbnBookData(code),
+          })
+          .then((isbnBook: IsbnBookData) => {
+            setIsbnBooks((isbnBooks) => {
+              if (!isbnBooks.find((b) => b.isbnCode === isbnBook.isbnCode)) {
+                return [...isbnBooks, isbnBook];
+              } else {
+                return isbnBooks;
+              }
+            });
+          });
         return [...codes, code];
       });
-    } else {
-      setNotIsbnCodes((codes: string[]) => {
-        if (codes.includes(code)) {
-          return codes;
-        }
-        return [...codes, code];
+    }
+  }, []);
+  const onUpload = useCallback((f: File | null) => {
+    if (f) {
+      Papa.parse(f, {
+        header: true,
+        complete: function (results, file) {
+          console.log("Parsing complete:", results, file);
+
+          const titleField = results.meta.fields?.find(
+            (f) =>
+              f.toLowerCase().startsWith("titre") ||
+              f.toLowerCase().startsWith("title")
+          );
+          const books = results.data
+            .map((row) => (row as { [key: string]: string })[titleField!])
+            .filter((t) => !!t)
+            .map((t) => ({
+              title: t,
+              authors: [],
+            }));
+          setImportedBooks(books);
+        },
+        error: function (error, file) {
+          console.log("Parsing failed:", error, file);
+        },
       });
     }
   }, []);
@@ -36,7 +88,10 @@ function App() {
     <>
       <QueryClientProvider client={queryClient}>
         <MantineProvider>
-          <div className="scanner-actions">
+          {scanning && <Scanner onDetected={onDetected} />}
+          <BookList bookList={matchedBookList} />
+
+          <div className="app-actions">
             {scanning ? (
               <ActionIcon
                 size={42}
@@ -56,27 +111,16 @@ function App() {
                 <Camera size={14} />
               </ActionIcon>
             )}
+            <FileInput
+              onChange={onUpload}
+              accept="text/csv,text/plain"
+              placeholder="Upload CSV"
+            ></FileInput>
           </div>
-          {scanning && <Scanner onDetected={onDetected} />}
-          <div>Livres scannés ({isbnCodes.length})</div>
-          <ul>
-            {isbnCodes.map((code, index) => (
-              <li key={index}>
-                <IsbnBookInfo isbn={code} />
-              </li>
-            ))}
-          </ul>
-          <details>
-            <summary>Autres codes scannés ({notIsbnCodes.length})</summary>
-            <ul>
-              {notIsbnCodes.map((code, index) => (
-                <li key={index}>{code}</li>
-              ))}
-            </ul>
-          </details>
         </MantineProvider>
       </QueryClientProvider>
     </>
   );
 }
+
 export default App;
