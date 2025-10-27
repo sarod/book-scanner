@@ -72,8 +72,12 @@ function App() {
   }, []);
   const onUpload = useCallback((files: File[]) => {
     parseBookFiles(files).then(
-      (newBooks) => setImportedBooks((prev) => [...prev, ...newBooks]),
-      (err) => console.log(err)
+      (newBooks) => {
+        setImportedBooks((prev) => [...prev, ...newBooks]);
+      },
+      (err: unknown) => {
+        console.log(err);
+      }
     );
   }, []);
   return (
@@ -98,14 +102,18 @@ function App() {
           {scanning ? (
             <ActionButton
               label="Stop scanning"
-              onClick={() => setScanning(false)}
+              onClick={() => {
+                setScanning(false);
+              }}
             >
               <CameraOffIcon size={24} />
             </ActionButton>
           ) : (
             <ActionButton
               label="Start scanning"
-              onClick={() => setScanning(true)}
+              onClick={() => {
+                setScanning(true);
+              }}
             >
               <CameraIcon size={24} />
             </ActionButton>
@@ -148,7 +156,9 @@ function FileUploadButton({
         style={{ display: "none" }}
         accept={accept}
         multiple
-        onChange={(e) => onUpload(Array.from(e.target.files || []))}
+        onChange={(e) => {
+          onUpload(Array.from(e.target.files ?? []));
+        }}
       />
     </>
   );

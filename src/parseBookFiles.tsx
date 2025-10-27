@@ -20,7 +20,7 @@ export async function parseBookFile(file: File): Promise<ImportedBookData[]> {
             f.toLowerCase().startsWith("title")
         );
         if (titleColumnIndex === -1) {
-          reject("No Title column found");
+          reject(new Error("No Title column found"));
         }
         const books = rows
           .slice(1)

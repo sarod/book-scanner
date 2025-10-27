@@ -14,24 +14,25 @@ export default function ZXingScanner({ onDetected }: ScannerProps) {
 
   const startScan = useCallback(() => {
     async function asyncStartScan() {
+      if (!videoRef.current) {
+        throw new Error("no videoRef");
+      }
       console.log("Requesting camera access...");
       const stream = await getUserMedia();
 
       console.log("Configuring video feedback...");
-      videoRef.current!.srcObject = stream;
+      videoRef.current.srcObject = stream;
       console.log("Initializing code reader...");
       const codeReader = new BrowserMultiFormatReader();
       codeReaderRef.current = codeReader;
       console.log("Initiatizing decode");
 
-      codeReader.decodeFromVideoContinuously(
+      await codeReader.decodeFromVideoContinuously(
         videoRef.current,
         null,
         (result, err) => {
-          if (result) {
-            console.log(result);
-            onDetected(result.getText());
-          }
+          console.log(result);
+          onDetected(result.getText());
           if (err && !(err instanceof NotFoundException)) {
             console.error(err);
           }
@@ -40,7 +41,9 @@ export default function ZXingScanner({ onDetected }: ScannerProps) {
       console.log("Scanning started.");
       setScanning(true);
     }
-    asyncStartScan();
+    asyncStartScan().catch((e: unknown) => {
+      console.error("start scan errors", e);
+    });
   }, [onDetected]);
   const stopScan = useCallback(() => {
     const codeReader = codeReaderRef.current;
@@ -48,10 +51,10 @@ export default function ZXingScanner({ onDetected }: ScannerProps) {
       codeReader.stopContinuousDecode();
       codeReaderRef.current = null;
     }
-    if (videoRef.current && videoRef.current.srcObject) {
-      const mediaStream = videoRef.current!.srcObject as MediaStream;
+    if (videoRef.current?.srcObject) {
+      const mediaStream = videoRef.current.srcObject as MediaStream;
       closeMediaStream(mediaStream);
-      videoRef.current!.srcObject = null;
+      videoRef.current.srcObject = null;
     }
     setScanning(false);
   }, []);

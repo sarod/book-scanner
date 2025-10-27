@@ -25,7 +25,7 @@ export default function H5qrLowLevelScanner({ onDetected }: ScannerProps) {
           height: { ideal: 720 },
         },
       };
-      reader.start(
+      await reader.start(
         mediaContraints,
         config,
         (decodedText, decodedResult) => {
@@ -39,19 +39,28 @@ export default function H5qrLowLevelScanner({ onDetected }: ScannerProps) {
       codeReaderRef.current = reader;
       setScanning(true);
     }
-    asyncStartScan();
+    asyncStartScan().then(
+      () => {
+        console.debug("start done");
+      },
+      (error: unknown) => {
+        console.error("error starting", error);
+      }
+    );
   }, [onDetected]);
   const stopScan = useCallback(() => {
     async function asyncStopScan() {
       const codeReader = codeReaderRef.current;
       if (codeReader) {
         await codeReader.stop();
-        await codeReader.clear();
+        codeReader.clear();
         codeReaderRef.current = null;
       }
       setScanning(false);
     }
-    asyncStopScan();
+    asyncStopScan().catch((e: unknown) => {
+      console.error(e);
+    });
   }, []);
 
   return (

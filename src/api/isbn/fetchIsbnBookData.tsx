@@ -1,9 +1,9 @@
 import type { IsbnBookData } from "./IsbnBookData";
 
-type VolumeListResponse = {
+interface VolumeListResponse {
   items: { volumeInfo: VolumeInfo }[];
-};
-type VolumeInfo = {
+}
+interface VolumeInfo {
   title: string;
   subtitle?: string;
   authors: string[];
@@ -18,7 +18,7 @@ type VolumeInfo = {
     small: string;
     medium: string;
   };
-};
+}
 
 export async function fetchIsbnBookData(isbn: string): Promise<IsbnBookData> {
   const response = await fetch(

@@ -7,7 +7,7 @@ import "./H5qrScanner.css";
 let incrementId = 1;
 
 export default function H5qrScanner({ onDetected }: ScannerProps) {
-  const scannerId = useMemo(() => "scanner-" + incrementId++, []);
+  const scannerId = useMemo(() => "scanner-" + (incrementId++).toString(), []);
   useEffect(() => {
     const scanner = new Html5QrcodeScanner(
       scannerId,
@@ -30,7 +30,9 @@ export default function H5qrScanner({ onDetected }: ScannerProps) {
 
     // Cleanup when closed
     return () => {
-      scanner.clear();
+      scanner.clear().catch((e: unknown) => {
+        console.error(e);
+      });
     };
   }, [onDetected, scannerId]);
 

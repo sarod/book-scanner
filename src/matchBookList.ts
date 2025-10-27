@@ -1,21 +1,21 @@
 import type { IsbnBookData } from "./api/isbn/IsbnBookData";
 import type { ImportedBookData } from "./ImportedBookData";
 
-export type ExtendedImportedBookData = ImportedBookData & {
+export interface ExtendedImportedBookData extends ImportedBookData {
   matchedIsbnBook?: IsbnBookData;
-};
+}
 
-export type MatchBookStats = {
+export interface MatchBookStats {
   matchedBooks: number;
   unmatchedBooks: number;
   extraneousIsbns: number;
-};
+}
 
-export type MatchBookListResult = {
+export interface MatchBookListResult {
   books: ExtendedImportedBookData[];
   extraneousIsbns: IsbnBookData[];
   stats: MatchBookStats;
-};
+}
 
 export function matchBookList(
   importedBookList: ImportedBookData[],
