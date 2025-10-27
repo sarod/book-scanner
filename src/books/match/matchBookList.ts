@@ -1,5 +1,5 @@
-import type { IsbnBookData } from "./api/isbn/IsbnBookData";
-import type { ImportedBookData } from "./ImportedBookData";
+import type { IsbnBookData } from "../isbn/IsbnBookData";
+import type { ImportedBookData } from "../ImportedBookData";
 
 export interface ExtendedImportedBookData extends ImportedBookData {
   matchedIsbnBook?: IsbnBookData;

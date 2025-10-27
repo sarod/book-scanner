@@ -1,9 +1,9 @@
-import { Table } from "@mantine/core";
-import type { MatchBookListResult } from "./matchBookList";
+import { Table, Tooltip } from "@mantine/core";
+import type { MatchBookListResult } from "./books/match/matchBookList";
 
 export const matchedBookEmoji = "✅";
 export const unmatchedBookEmoji = "🔎";
-export const extraneousIsbn = "❓";
+export const extraneousIsbn = "⚠️";
 
 export function BookList({ bookList }: { bookList: MatchBookListResult }) {
   return (
@@ -19,17 +19,44 @@ export function BookList({ bookList }: { bookList: MatchBookListResult }) {
           <Table.Tr key={index}>
             <Table.Td> {b.title}</Table.Td>
             <Table.Td>
-              {b.matchedIsbnBook ? matchedBookEmoji : unmatchedBookEmoji}
+              {b.matchedIsbnBook ? (
+                <MatchedBookPicto />
+              ) : (
+                <UnmatchedBookPicto />
+              )}
             </Table.Td>
           </Table.Tr>
         ))}
         {bookList.extraneousIsbns.map((b, index) => (
           <Table.Tr key={index}>
             <Table.Td> {b.title}</Table.Td>
-            <Table.Td> {extraneousIsbn} </Table.Td>
+            <Table.Td>
+              <ExtraneousIsbnPicto />
+            </Table.Td>
           </Table.Tr>
         ))}
       </Table.Tbody>
     </Table>
+  );
+}
+export function MatchedBookPicto() {
+  return (
+    <Tooltip label="Matched">
+      <span>{matchedBookEmoji}</span>
+    </Tooltip>
+  );
+}
+export function UnmatchedBookPicto() {
+  return (
+    <Tooltip label="Unmatched">
+      <span>{unmatchedBookEmoji}</span>
+    </Tooltip>
+  );
+}
+export function ExtraneousIsbnPicto() {
+  return (
+    <Tooltip label="Scanned but not in list">
+      <span>{extraneousIsbn}</span>
+    </Tooltip>
   );
 }

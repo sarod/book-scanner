@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { matchBookList } from "./matchBookList";
-import type { ImportedBookData } from "./ImportedBookData";
-import type { IsbnBookData } from "./api/isbn/IsbnBookData";
+import type { ImportedBookData } from "../ImportedBookData";
+import type { IsbnBookData } from "../isbn/IsbnBookData";
 
 describe("matchBookList", () => {
   const sampleImportedBook: ImportedBookData = {

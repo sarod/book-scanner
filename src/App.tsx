@@ -1,14 +1,8 @@
-import {
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-  type PropsWithChildren,
-} from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import "./App.css";
 import "@mantine/core/styles.css";
-import { ActionIcon, Divider, MantineProvider, Tooltip } from "@mantine/core";
-import { isIsbn } from "./isbn/isIsbn";
+import { Divider, MantineProvider } from "@mantine/core";
+import { isIsbn } from "./books/isbn/isIsbn";
 import { Scanner } from "./scanner/Scanner";
 import {
   CameraIcon,
@@ -16,18 +10,18 @@ import {
   FilePlusIcon,
   ListRestartIcon,
 } from "lucide-react";
-import type { IsbnBookData } from "./api/isbn/IsbnBookData";
-import { fetchIsbnBookData } from "./api/isbn/fetchIsbnBookData";
-import { matchBookList, type MatchBookListResult } from "./matchBookList";
+import type { IsbnBookData } from "./books/isbn/IsbnBookData";
+import { fetchIsbnBookData } from "./books/isbn/fetchIsbnBookData";
 import {
-  BookList,
-  extraneousIsbn as extraneousIsbnEmoji,
-  matchedBookEmoji,
-  unmatchedBookEmoji,
-} from "./BookList";
-import type { ImportedBookData } from "./ImportedBookData";
-import { parseBookFiles } from "./parseBookFiles";
+  matchBookList,
+  type MatchBookListResult,
+} from "./books/match/matchBookList";
+import { BookList } from "./BookList";
+import type { ImportedBookData } from "./books/ImportedBookData";
+import { parseBookFiles } from "./books/parseBookFiles";
 import { notifications } from "@mantine/notifications";
+import { BookListStats } from "./toolbar/BookListStats";
+import { ActionButton } from "./toolbar/ActionButton";
 
 function App() {
   const [importedBooks, setImportedBooks] = useState<ImportedBookData[]>([]);
@@ -93,11 +87,7 @@ function App() {
           <ActionButton label="Rest List" onClick={reset} disabled={scanning}>
             <ListRestartIcon size={24} />
           </ActionButton>
-          <div style={{ margin: "auto" }}>
-            {matchedBookEmoji}: {matchedBookList.stats.matchedBooks}
-            {unmatchedBookEmoji}: {matchedBookList.stats.unmatchedBooks}
-            {extraneousIsbnEmoji}: {matchedBookList.stats.extraneousIsbns}
-          </div>
+          <BookListStats stats={matchedBookList.stats} />
           <Divider orientation="vertical" />
           {scanning ? (
             <ActionButton
@@ -125,7 +115,6 @@ function App() {
     </>
   );
 }
-
 function FileUploadButton({
   label,
   onUpload,
@@ -164,28 +153,4 @@ function FileUploadButton({
   );
 }
 
-function ActionButton({
-  label,
-  onClick,
-  children,
-  disabled,
-}: PropsWithChildren<{
-  label: string;
-  onClick: () => void;
-  disabled?: boolean;
-}>) {
-  return (
-    <Tooltip label={label}>
-      <ActionIcon
-        size={42}
-        variant="default"
-        aria-label={label}
-        onClick={onClick}
-        disabled={disabled}
-      >
-        {children}
-      </ActionIcon>
-    </Tooltip>
-  );
-}
 export default App;
