@@ -5,9 +5,16 @@ export type ExtendedImportedBookData = ImportedBookData & {
   matchedIsbnBook?: IsbnBookData;
 };
 
+export type MatchBookStats = {
+  matchedBooks: number;
+  unmatchedBooks: number;
+  extraneousIsbns: number;
+};
+
 export type MatchBookListResult = {
   books: ExtendedImportedBookData[];
-  unmatchedIsbns: IsbnBookData[];
+  extraneousIsbns: IsbnBookData[];
+  stats: MatchBookStats;
 };
 
 export function matchBookList(
@@ -32,8 +39,17 @@ export function matchBookList(
       }
     }
   );
-
-  return { books: booksExtended, unmatchedIsbns: unmatchedIsbnBooks };
+  const matchedCount = booksExtended.filter((b) => b.matchedIsbnBook).length;
+  const stats = {
+    matchedBooks: matchedCount,
+    unmatchedBooks: importedBookList.length - matchedCount,
+    extraneousIsbns: isbnBooks.length - matchedCount,
+  };
+  return {
+    books: booksExtended,
+    extraneousIsbns: unmatchedIsbnBooks,
+    stats: stats,
+  };
 }
 function isMatching(
   importedBook: ImportedBookData,

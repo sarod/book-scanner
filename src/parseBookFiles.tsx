@@ -11,7 +11,7 @@ export async function parseBookFile(file: File): Promise<ImportedBookData[]> {
   return new Promise<ImportedBookData[]>((resolve, reject) => {
     parse(file, {
       header: false,
-      complete: function (results, file) {
+      complete: function (results) {
         const rows: string[][] = results.data as string[][];
         const headersRow = rows[0];
         const titleColumnIndex = headersRow.findIndex(
