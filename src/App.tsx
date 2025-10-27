@@ -8,7 +8,6 @@ import {
 import "./App.css";
 import "@mantine/core/styles.css";
 import { ActionIcon, Divider, MantineProvider, Tooltip } from "@mantine/core";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { isIsbn } from "./isbn/isIsbn";
 import { Scanner } from "./scanner/Scanner";
 import {
@@ -18,10 +17,7 @@ import {
   ListRestartIcon,
 } from "lucide-react";
 import type { IsbnBookData } from "./api/isbn/IsbnBookData";
-import {
-  fetchIsbnBookData,
-  fetchIsbnBookDataQueryKey,
-} from "./api/isbn/fetchIsbnBookData";
+import { fetchIsbnBookData } from "./api/isbn/fetchIsbnBookData";
 import { matchBookList, type MatchBookListResult } from "./matchBookList";
 import {
   BookList,
@@ -31,8 +27,7 @@ import {
 } from "./BookList";
 import type { ImportedBookData } from "./ImportedBookData";
 import { parseBookFiles } from "./parseBookFiles";
-
-const queryClient = new QueryClient();
+import { notifications } from "@mantine/notifications";
 
 function App() {
   const [importedBooks, setImportedBooks] = useState<ImportedBookData[]>([]);
@@ -55,12 +50,8 @@ function App() {
         if (codes.includes(code)) {
           return codes;
         }
-        queryClient
-          .fetchQuery({
-            queryKey: fetchIsbnBookDataQueryKey(code),
-            queryFn: () => fetchIsbnBookData(code),
-          })
-          .then((isbnBook: IsbnBookData) => {
+        fetchIsbnBookData(code).then(
+          (isbnBook: IsbnBookData) => {
             setIsbnBooks((isbnBooks) => {
               if (!isbnBooks.find((b) => b.isbnCode === isbnBook.isbnCode)) {
                 return [...isbnBooks, isbnBook];
@@ -68,7 +59,13 @@ function App() {
                 return isbnBooks;
               }
             });
-          });
+          },
+          () => {
+            notifications.show({
+              message: "Error fetching Book Data for isbn:" + code,
+            });
+          }
+        );
         return [...codes, code];
       });
     }
@@ -81,44 +78,42 @@ function App() {
   }, []);
   return (
     <>
-      <QueryClientProvider client={queryClient}>
-        <MantineProvider defaultColorScheme="auto">
-          <div className="app-actions">
-            <FileUploadButton
-              accept="text/csv,text/plain"
-              label="Upload book list"
-              onUpload={onUpload}
-              disabled={scanning}
-            />
-            <ActionButton label="Rest List" onClick={reset} disabled={scanning}>
-              <ListRestartIcon size={24} />
-            </ActionButton>
-            <div style={{ margin: "auto" }}>
-              {matchedBookEmoji}: {matchedBookList.stats.matchedBooks}
-              {unmatchedBookEmoji}: {matchedBookList.stats.unmatchedBooks}
-              {extraneousIsbnEmoji}: {matchedBookList.stats.extraneousIsbns}
-            </div>
-            <Divider orientation="vertical" />
-            {scanning ? (
-              <ActionButton
-                label="Stop scanning"
-                onClick={() => setScanning(false)}
-              >
-                <CameraOffIcon size={24} />
-              </ActionButton>
-            ) : (
-              <ActionButton
-                label="Start scanning"
-                onClick={() => setScanning(true)}
-              >
-                <CameraIcon size={24} />
-              </ActionButton>
-            )}
+      <MantineProvider defaultColorScheme="auto">
+        <div className="app-actions">
+          <FileUploadButton
+            accept="text/csv,text/plain"
+            label="Upload book list"
+            onUpload={onUpload}
+            disabled={scanning}
+          />
+          <ActionButton label="Rest List" onClick={reset} disabled={scanning}>
+            <ListRestartIcon size={24} />
+          </ActionButton>
+          <div style={{ margin: "auto" }}>
+            {matchedBookEmoji}: {matchedBookList.stats.matchedBooks}
+            {unmatchedBookEmoji}: {matchedBookList.stats.unmatchedBooks}
+            {extraneousIsbnEmoji}: {matchedBookList.stats.extraneousIsbns}
           </div>
-          {scanning && <Scanner onDetected={onDetected} />}
-          {!scanning && <BookList bookList={matchedBookList} />}
-        </MantineProvider>
-      </QueryClientProvider>
+          <Divider orientation="vertical" />
+          {scanning ? (
+            <ActionButton
+              label="Stop scanning"
+              onClick={() => setScanning(false)}
+            >
+              <CameraOffIcon size={24} />
+            </ActionButton>
+          ) : (
+            <ActionButton
+              label="Start scanning"
+              onClick={() => setScanning(true)}
+            >
+              <CameraIcon size={24} />
+            </ActionButton>
+          )}
+        </div>
+        {scanning && <Scanner onDetected={onDetected} />}
+        {!scanning && <BookList bookList={matchedBookList} />}
+      </MantineProvider>
     </>
   );
 }
