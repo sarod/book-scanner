@@ -37,7 +37,3 @@ export async function fetchIsbnBookData(isbn: string): Promise<IsbnBookData> {
     description: volumeInfo.description,
   };
 }
-
-export function fetchIsbnBookDataQueryKey(isbn: string): string[] {
-  return ["isbn-book", isbn];
-}
