@@ -1,15 +1,9 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import "./App.css";
 import "@mantine/core/styles.css";
-import { Divider, MantineProvider } from "@mantine/core";
+import { MantineProvider } from "@mantine/core";
 import { isIsbn } from "./books/isbn/isIsbn";
 import { Scanner } from "./scanner/Scanner";
-import {
-  CameraIcon,
-  CameraOffIcon,
-  FilePlusIcon,
-  ListRestartIcon,
-} from "lucide-react";
 import type { IsbnBookData } from "./books/isbn/IsbnBookData";
 import { fetchIsbnBookData } from "./books/isbn/fetchIsbnBookData";
 import {
@@ -20,25 +14,26 @@ import { BookList } from "./BookList";
 import type { LibraryBookData } from "./books/library/LibraryBookData";
 import { parseBookFiles } from "./books/library/parseLibraryBookFIles";
 import { notifications } from "@mantine/notifications";
-import { BookListStats } from "./toolbar/BookListStats";
-import { ActionButton } from "./toolbar/ActionButton";
 
-function App() {
-  const [importedBooks, setImportedBooks] = useState<LibraryBookData[]>([]);
-  const [, setIsbnCodes] = useState<string[]>([]);
-  const [scanning, setScanning] = useState(false);
+import { AppBar } from "./toolbar/AppBar";
+
+function useIsbnBooks(): {
+  reset: () => void;
+  addIsbnCode: (code: string) => void;
+  isbnBooks: IsbnBookData[];
+  fetching: boolean;
+} {
+  const [isbnCodes, setIsbnCodes] = useState<string[]>([]);
   const [isbnBooks, setIsbnBooks] = useState<IsbnBookData[]>([]);
-  const reset = useCallback(() => {
-    setImportedBooks([]);
+  const [isbnErrors, setIsbnErrors] = useState<string[]>([]);
+
+  const reset = () => {
     setIsbnCodes([]);
     setIsbnBooks([]);
-    setScanning(false);
-  }, []);
-  const matchedBookList: MatchBookListResult = useMemo(
-    () => matchBookList(importedBooks, isbnBooks),
-    [isbnBooks, importedBooks]
-  );
-  const onDetected = useCallback((code: string) => {
+    setIsbnErrors([]);
+  };
+
+  const addIsbnCode = (code: string) => {
     if (isIsbn(code)) {
       setIsbnCodes((codes: string[]) => {
         if (codes.includes(code)) {
@@ -54,7 +49,10 @@ function App() {
               }
             });
           },
-          () => {
+          (e: unknown) => {
+            isbnErrors.push(
+              "Error fetching Book Data for isbn " + code + ":" + String(e)
+            );
             notifications.show({
               message: "Error fetching Book Data for isbn:" + code,
             });
@@ -63,7 +61,29 @@ function App() {
         return [...codes, code];
       });
     }
-  }, []);
+  };
+
+  return {
+    reset,
+    addIsbnCode,
+    isbnBooks,
+    fetching: isbnCodes.length !== isbnBooks.length + isbnErrors.length,
+  };
+}
+
+function App() {
+  const [importedBooks, setImportedBooks] = useState<LibraryBookData[]>([]);
+  const [scanning, setScanning] = useState(false);
+  const isbnBooks = useIsbnBooks();
+  const reset = useCallback(() => {
+    setImportedBooks([]);
+    isbnBooks.reset();
+    setScanning(false);
+  }, [isbnBooks]);
+  const matchedBookList: MatchBookListResult = useMemo(
+    () => matchBookList(importedBooks, isbnBooks.isbnBooks),
+    [isbnBooks, importedBooks]
+  );
   const onUpload = useCallback((files: File[]) => {
     parseBookFiles(files).then(
       (newBooks) => {
@@ -77,78 +97,22 @@ function App() {
   return (
     <>
       <MantineProvider defaultColorScheme="auto">
-        <div className="app-actions">
-          <FileUploadButton
-            accept="text/csv,text/plain"
-            label="Upload book list"
-            onUpload={onUpload}
-            disabled={scanning}
-          />
-          <ActionButton label="Rest List" onClick={reset} disabled={scanning}>
-            <ListRestartIcon size={24} />
-          </ActionButton>
-          <BookListStats stats={matchedBookList.stats} />
-          <Divider orientation="vertical" />
-          {scanning ? (
-            <ActionButton
-              label="Stop scanning"
-              onClick={() => {
-                setScanning(false);
-              }}
-            >
-              <CameraOffIcon size={24} />
-            </ActionButton>
-          ) : (
-            <ActionButton
-              label="Start scanning"
-              onClick={() => {
-                setScanning(true);
-              }}
-            >
-              <CameraIcon size={24} />
-            </ActionButton>
-          )}
-        </div>
-        {scanning && <Scanner onDetected={onDetected} />}
+        <AppBar
+          scanning={scanning}
+          onReset={reset}
+          startScanning={() => {
+            setScanning(true);
+          }}
+          stopScanning={() => {
+            setScanning(false);
+          }}
+          fetching={isbnBooks.fetching}
+          onUpload={onUpload}
+          stats={matchedBookList.stats}
+        />
+        {scanning && <Scanner onDetected={isbnBooks.addIsbnCode} />}
         {!scanning && <BookList bookList={matchedBookList} />}
       </MantineProvider>
-    </>
-  );
-}
-function FileUploadButton({
-  label,
-  onUpload,
-  accept,
-  disabled,
-}: {
-  label: string;
-  onUpload: (files: File[]) => void;
-  accept?: string;
-  disabled?: boolean;
-}) {
-  const inputRef = useRef<HTMLInputElement>(null);
-  return (
-    <>
-      {" "}
-      <ActionButton
-        label={label}
-        onClick={() => {
-          inputRef.current?.click();
-        }}
-        disabled={disabled}
-      >
-        <FilePlusIcon size={24} />
-      </ActionButton>
-      <input
-        ref={inputRef}
-        type="file"
-        style={{ display: "none" }}
-        accept={accept}
-        multiple
-        onChange={(e) => {
-          onUpload(Array.from(e.target.files ?? []));
-        }}
-      />
     </>
   );
 }

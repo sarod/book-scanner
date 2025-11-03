@@ -21,6 +21,7 @@ interface VolumeInfo {
 }
 
 export async function fetchIsbnBookData(isbn: string): Promise<IsbnBookData> {
+  console.debug("fetchIsbnBookData:" + isbn);
   const response = await fetch(
     `https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`
   );

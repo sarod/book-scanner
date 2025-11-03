@@ -36,6 +36,6 @@ function isValidISBN10(code: string): boolean {
   return sum % 11 === 0;
 }
 
-function removeHyphens(code: string): string {
+export function removeHyphens(code: string): string {
   return code.replaceAll("-", "");
 }
