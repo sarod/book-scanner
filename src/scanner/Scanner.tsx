@@ -1,12 +1,11 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import H5qrLowLevelScanner from "./H5qrLowLevelScanner";
 import H5qrScanner from "./H5qrScanner";
 import type { ScannerProps } from "./ScannerProps";
 import ZXingScanner from "./ZXingScanner";
-import { Button, TextInput } from "@mantine/core";
-import { removeHyphens } from "../books/isbn/isIsbn";
+import { IsbnForm } from "./IsbnForm";
 
-export type ScannerImpl = "h5qr-scanner" | "h5qr-low-level" | "zxing" | "debug";
+export type ScannerImpl = "h5qr-scanner" | "h5qr-low-level" | "zxing" | "form";
 
 export function Scanner({
   onDetected,
@@ -21,34 +20,8 @@ export function Scanner({
       {scannerImpl === "h5qr-scanner" && (
         <H5qrScanner onDetected={onDetected} />
       )}
-      {scannerImpl === "debug" && (
-        <DebugScanner onDetected={onDetected}></DebugScanner>
-      )}
+      {scannerImpl === "form" && <IsbnForm onDetected={onDetected} />}
     </>
-  );
-}
-
-function DebugScanner({ onDetected }: ScannerProps) {
-  const [code, setCode] = useState("");
-  return (
-    <div>
-      <TextInput
-        label="Code"
-        onChange={(e) => {
-          setCode(e.currentTarget.value);
-        }}
-        value={code}
-        id="isbn-code"
-        autoComplete="true"
-      />
-      <Button
-        onClick={() => {
-          onDetected(removeHyphens(code.trim()));
-        }}
-      >
-        Send
-      </Button>
-    </div>
   );
 }
 
@@ -58,7 +31,7 @@ function findScannerImpl(url: string): ScannerImpl {
     param === "h5qr-scanner" ||
     param === "zxing" ||
     param === "h5qr-low-level" ||
-    param === "debug"
+    param === "form"
   ) {
     return param;
   } else {
