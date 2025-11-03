@@ -1,12 +1,13 @@
 import { describe, it, expect } from "vitest";
 import { matchBookList } from "./matchBookList";
-import type { ImportedBookData } from "../ImportedBookData";
+import type { LibraryBookData } from "../library/LibraryBookData";
 import type { IsbnBookData } from "../isbn/IsbnBookData";
 
 describe("matchBookList", () => {
-  const sampleImportedBook: ImportedBookData = {
+  const sampleImportedBook: LibraryBookData = {
     title: "Sample Book",
     authors: ["Author One"],
+    overdue: false,
   };
 
   const sampleIsbnBook: IsbnBookData = {
@@ -16,7 +17,7 @@ describe("matchBookList", () => {
   };
 
   it("should match books with exact title match", () => {
-    const importedBooks: ImportedBookData[] = [sampleImportedBook];
+    const importedBooks: LibraryBookData[] = [sampleImportedBook];
     const isbnBooks: IsbnBookData[] = [sampleIsbnBook];
 
     const result = matchBookList(importedBooks, isbnBooks);
@@ -30,9 +31,10 @@ describe("matchBookList", () => {
   });
 
   it("should match books where imported title includes ISBN title", () => {
-    const importedBook: ImportedBookData = {
+    const importedBook: LibraryBookData = {
       title: "The Sample Book: A Story",
       authors: ["Author One"],
+      overdue: false,
     };
     const isbnBooks: IsbnBookData[] = [sampleIsbnBook];
 
@@ -43,9 +45,10 @@ describe("matchBookList", () => {
   });
 
   it("should not match books with different titles", () => {
-    const importedBook: ImportedBookData = {
+    const importedBook: LibraryBookData = {
       title: "Different Book",
       authors: ["Author Two"],
+      overdue: false,
     };
     const isbnBooks: IsbnBookData[] = [sampleIsbnBook];
 
@@ -59,10 +62,10 @@ describe("matchBookList", () => {
   });
 
   it("should handle multiple books with partial matches", () => {
-    const importedBooks: ImportedBookData[] = [
-      { title: "Book One", authors: ["Author A"] },
-      { title: "Book Two: Extended", authors: ["Author B"] },
-      { title: "Book Three", authors: ["Author C"] },
+    const importedBooks: LibraryBookData[] = [
+      { title: "Book One", authors: ["Author A"], overdue: false },
+      { title: "Book Two: Extended", authors: ["Author B"], overdue: false },
+      { title: "Book Three", authors: ["Author C"], overdue: false },
     ];
     const isbnBooks: IsbnBookData[] = [
       { isbnCode: "1", title: "Book One", authors: ["Author A"] },
@@ -84,9 +87,10 @@ describe("matchBookList", () => {
   });
 
   it("should handle case insensitive matching", () => {
-    const importedBook: ImportedBookData = {
+    const importedBook: LibraryBookData = {
       title: "sample book",
       authors: ["Author One"],
+      overdue: false,
     };
     const isbnBooks: IsbnBookData[] = [sampleIsbnBook];
 
@@ -106,7 +110,7 @@ describe("matchBookList", () => {
   });
 
   it("should handle extraneous ISBNs", () => {
-    const importedBooks: ImportedBookData[] = [];
+    const importedBooks: LibraryBookData[] = [];
     const isbnBooks: IsbnBookData[] = [sampleIsbnBook];
 
     const result = matchBookList(importedBooks, isbnBooks);

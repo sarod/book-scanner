@@ -17,14 +17,14 @@ import {
   type MatchBookListResult,
 } from "./books/match/matchBookList";
 import { BookList } from "./BookList";
-import type { ImportedBookData } from "./books/ImportedBookData";
-import { parseBookFiles } from "./books/parseBookFiles";
+import type { LibraryBookData } from "./books/library/LibraryBookData";
+import { parseBookFiles } from "./books/library/parseLibraryBookFIles";
 import { notifications } from "@mantine/notifications";
 import { BookListStats } from "./toolbar/BookListStats";
 import { ActionButton } from "./toolbar/ActionButton";
 
 function App() {
-  const [importedBooks, setImportedBooks] = useState<ImportedBookData[]>([]);
+  const [importedBooks, setImportedBooks] = useState<LibraryBookData[]>([]);
   const [, setIsbnCodes] = useState<string[]>([]);
   const [scanning, setScanning] = useState(false);
   const [isbnBooks, setIsbnBooks] = useState<IsbnBookData[]>([]);

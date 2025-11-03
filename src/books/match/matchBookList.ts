@@ -1,7 +1,10 @@
 import type { IsbnBookData } from "../isbn/IsbnBookData";
-import type { ImportedBookData } from "../ImportedBookData";
+import type { LibraryBookData } from "../library/LibraryBookData";
 
-export interface ExtendedImportedBookData extends ImportedBookData {
+/**
+ * Library book with matched isbn if matched
+ */
+export interface MatchedBookData extends LibraryBookData {
   matchedIsbnBook?: IsbnBookData;
 }
 
@@ -12,37 +15,38 @@ export interface MatchBookStats {
 }
 
 export interface MatchBookListResult {
-  books: ExtendedImportedBookData[];
+  books: MatchedBookData[];
+  /**
+   * Isbn books that didn't match any libraryBook
+   */
   extraneousIsbns: IsbnBookData[];
   stats: MatchBookStats;
 }
 
 export function matchBookList(
-  importedBookList: ImportedBookData[],
+  libraryBooks: LibraryBookData[],
   isbnBooks: IsbnBookData[]
 ): MatchBookListResult {
   const unmatchedIsbnBooks = [...isbnBooks];
-  const booksExtended: ExtendedImportedBookData[] = importedBookList.map(
-    (importedBook) => {
-      const isbnBookIndex = unmatchedIsbnBooks.findIndex((isbnBook) =>
-        isMatching(importedBook, isbnBook)
-      );
-      if (isbnBookIndex !== -1) {
-        const isbnBook = unmatchedIsbnBooks[isbnBookIndex];
-        unmatchedIsbnBooks.splice(isbnBookIndex, 1);
-        return {
-          ...importedBook,
-          matchedIsbnBook: isbnBook,
-        };
-      } else {
-        return importedBook;
-      }
+  const booksExtended: MatchedBookData[] = libraryBooks.map((importedBook) => {
+    const isbnBookIndex = unmatchedIsbnBooks.findIndex((isbnBook) =>
+      isMatching(importedBook, isbnBook)
+    );
+    if (isbnBookIndex !== -1) {
+      const isbnBook = unmatchedIsbnBooks[isbnBookIndex];
+      unmatchedIsbnBooks.splice(isbnBookIndex, 1);
+      return {
+        ...importedBook,
+        matchedIsbnBook: isbnBook,
+      };
+    } else {
+      return importedBook;
     }
-  );
+  });
   const matchedCount = booksExtended.filter((b) => b.matchedIsbnBook).length;
   const stats = {
     matchedBooks: matchedCount,
-    unmatchedBooks: importedBookList.length - matchedCount,
+    unmatchedBooks: libraryBooks.length - matchedCount,
     extraneousIsbns: isbnBooks.length - matchedCount,
   };
   return {
@@ -51,8 +55,9 @@ export function matchBookList(
     stats: stats,
   };
 }
+
 function isMatching(
-  importedBook: ImportedBookData,
+  importedBook: LibraryBookData,
   isbnBook: IsbnBookData
 ): boolean {
   if (importedBook.title.toLowerCase() === isbnBook.title.toLowerCase()) {
