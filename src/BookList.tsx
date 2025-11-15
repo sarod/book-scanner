@@ -21,49 +21,66 @@ import {
   ClockCheckIcon,
   ClockFadingIcon,
   CrossIcon,
+  OctagonAlertIcon,
   ScanBarcodeIcon,
   TriangleAlertIcon,
 } from "lucide-react";
 import { useMemo } from "react";
+import type { IsbnFetchError } from "./useIsbnBooks";
 
-type MatchResultItemType = MatchResultItem["type"];
+type BookListItem = MatchResultItem | IsbnFetchErrorItem;
 
-function getType(matchResultItem: MatchResultItem): MatchResultItemType {
-  return matchResultItem.type;
+interface IsbnFetchErrorItem extends IsbnFetchError {
+  type: "isbn-fetch-error";
 }
 
-function getOverdue(bookData: MatchResultItem): boolean | null {
-  if (isUnmatchedIsbnBook(bookData)) {
+type BookListItemType = BookListItem["type"];
+
+function errorItem(fetchError: IsbnFetchError): IsbnFetchErrorItem {
+  return { ...fetchError, type: "isbn-fetch-error" };
+}
+function isErrorItem(item: BookListItem): item is IsbnFetchErrorItem {
+  return item.type === "isbn-fetch-error";
+}
+
+function getType(item: BookListItem): BookListItemType {
+  return item.type;
+}
+
+function getOverdue(item: BookListItem): boolean | null {
+  if (isErrorItem(item) || isUnmatchedIsbnBook(item)) {
     return null;
   } else {
-    return bookData.libraryBook.overdue;
+    return item.libraryBook.overdue;
   }
 }
 
-function getTitle(book: MatchResultItem): string {
-  if (isMatchedBook(book)) {
+function getTitle(item: BookListItem): string {
+  if (isErrorItem(item)) {
+    return item.message;
+  } else if (isMatchedBook(item)) {
     return (
-      book.libraryBook.title +
+      item.libraryBook.title +
       " <=>" +
-      book.matchedIsbnBook.title +
-      (book.matchedIsbnBook.subtitle
-        ? " - " + book.matchedIsbnBook.subtitle
+      item.matchedIsbnBook.title +
+      (item.matchedIsbnBook.subtitle
+        ? " - " + item.matchedIsbnBook.subtitle
         : "")
     );
-  } else if (isUnmatchedLibraryBook(book)) {
-    return book.libraryBook.title;
+  } else if (isUnmatchedLibraryBook(item)) {
+    return item.libraryBook.title;
   } else {
     return (
-      book.isbnBook.title +
-      (book.isbnBook.subtitle ? " - " + book.isbnBook.subtitle : "") +
+      item.isbnBook.title +
+      (item.isbnBook.subtitle ? " - " + item.isbnBook.subtitle : "") +
       " [" +
-      book.isbnBook.isbnCode +
+      item.isbnBook.isbnCode +
       "]"
     );
   }
 }
 
-const columns: ColumnDef<MatchResultItem>[] = [
+const columns: ColumnDef<BookListItem>[] = [
   {
     id: "match-item-type",
     accessorFn: getType,
@@ -71,13 +88,15 @@ const columns: ColumnDef<MatchResultItem>[] = [
       return <ScanBarcodeIcon size={iconSize} />;
     },
     cell: (props) => {
-      switch (props.getValue() as MatchResultItemType) {
+      switch (props.getValue() as BookListItemType) {
         case "matched":
           return <MatchedBookPicto />;
         case "unmatched-isbn":
           return <UnmatchedIsbnBookPicto />;
         case "unmatched-library":
           return <UnmatchedLibraryBookPicto />;
+        case "isbn-fetch-error":
+          return <FetchErrorIsbnPicto />;
       }
     },
   },
@@ -111,8 +130,17 @@ const columns: ColumnDef<MatchResultItem>[] = [
 const iconSize = 20;
 const iconColumns = ["return-state", "match-item-type"];
 
-export function BookList({ bookList }: { bookList: MatchResultItem[] }) {
-  const data: MatchResultItem[] = useMemo(() => bookList, [bookList]);
+export function BookList({
+  matchList: bookList,
+  fetchErrors,
+}: {
+  matchList: MatchResultItem[];
+  fetchErrors: IsbnFetchError[];
+}) {
+  const data: BookListItem[] = useMemo(
+    () => [...bookList, ...fetchErrors.map((e) => errorItem(e))],
+    [bookList, fetchErrors]
+  );
   const table = useReactTable({
     columns,
     data,
@@ -213,15 +241,15 @@ export function UnmatchedLibraryBookPicto() {
 }
 export function FetchErrorIsbnPicto() {
   return (
-    <Tooltip label="Scanned but not in list">
-      <TriangleAlertIcon size={iconSize} color="#FBC02D" />
+    <Tooltip label="Failed to fetch book data for isbn">
+      <OctagonAlertIcon size={iconSize} color="#D32F2F" />
     </Tooltip>
   );
 }
 export function UnmatchedIsbnBookPicto() {
   return (
     <Tooltip label="Scanned but not in list">
-      <CrossIcon size={iconSize} color="#D32F2F" />
+      <TriangleAlertIcon size={iconSize} color="#FBC02D" />
     </Tooltip>
   );
 }

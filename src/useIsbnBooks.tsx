@@ -3,19 +3,23 @@ import { fetchIsbnBookData } from "./books/isbn/fetchIsbnBookData";
 import type { IsbnBookData } from "./books/isbn/IsbnBookData";
 import { isIsbn } from "./books/isbn/isIsbn";
 
-interface FetchError {
+export interface IsbnFetchError {
+  isbnCode: string;
   message: string;
   error: unknown;
 }
-export function useIsbnBooks(): {
+export interface UseUsbnBooksResult {
   reset: () => void;
   addIsbnCode: (code: string) => void;
   isbnBooks: IsbnBookData[];
   fetching: boolean;
-} {
+  fetchErrors: IsbnFetchError[];
+}
+
+export function useIsbnBooks(): UseUsbnBooksResult {
   const [isbnCodes, setIsbnCodes] = useState<string[]>([]);
   const [isbnBooks, setIsbnBooks] = useState<IsbnBookData[]>([]);
-  const [fetchErrors, setFetchErrors] = useState<FetchError[]>([]);
+  const [fetchErrors, setFetchErrors] = useState<IsbnFetchError[]>([]);
 
   const reset = () => {
     setIsbnCodes([]);
@@ -49,7 +53,11 @@ export function useIsbnBooks(): {
         const message =
           "Error fetching isbn data for code " + code + ":\n" + String(e);
         console.debug(message);
-        const fetchError: FetchError = { message, error: e };
+        const fetchError: IsbnFetchError = {
+          isbnCode: code,
+          message,
+          error: e,
+        };
         setFetchErrors((errors) => [...errors, fetchError]);
       }
     );
@@ -60,5 +68,6 @@ export function useIsbnBooks(): {
     addIsbnCode,
     isbnBooks,
     fetching: isbnCodes.length !== isbnBooks.length + fetchErrors.length,
+    fetchErrors,
   };
 }

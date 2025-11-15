@@ -58,7 +58,12 @@ function App() {
           stats={stats}
         />
         {scanning && <Scanner onDetected={isbnBooks.addIsbnCode} />}
-        {!scanning && <BookList bookList={matchedBookList} />}
+        {!scanning && (
+          <BookList
+            matchList={matchedBookList}
+            fetchErrors={isbnBooks.fetchErrors}
+          />
+        )}
       </MantineProvider>
     </>
   );
