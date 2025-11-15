@@ -1,26 +1,68 @@
 import type { IsbnBookData } from "../isbn/IsbnBookData";
 import type { LibraryBookData } from "../library/LibraryBookData";
+import { type MatchResultStats, matchResultStats } from "./matchResultStats";
 
 /**
- * Library book with matched isbn if matched
+ * Union type for match results
  */
-export interface MatchedBookData extends LibraryBookData {
-  matchedIsbnBook?: IsbnBookData;
+export type MatchResultItem =
+  | MatchedBook
+  | UnmatchedLibraryBook
+  | UnmatchedIsbnBook;
+
+/**
+ * A library book that has been matched with an ISBN book
+ */
+export interface MatchedBook {
+  type: "matched";
+  libraryBook: LibraryBookData;
+  matchedIsbnBook: IsbnBookData;
 }
 
-export interface MatchBookStats {
-  matchedBooks: number;
-  unmatchedBooks: number;
-  extraneousIsbns: number;
+/**
+ * A library book that could not be matched with any ISBN book
+ */
+export interface UnmatchedLibraryBook {
+  type: "unmatched-library";
+  libraryBook: LibraryBookData;
+}
+
+/**
+ * An ISBN book that could not be matched with any library book
+ */
+export interface UnmatchedIsbnBook {
+  type: "unmatched-isbn";
+  isbnBook: IsbnBookData;
 }
 
 export interface MatchBookListResult {
-  books: MatchedBookData[];
-  /**
-   * Isbn books that didn't match any libraryBook
-   */
-  extraneousIsbns: IsbnBookData[];
-  stats: MatchBookStats;
+  results: MatchResultItem[];
+  stats: MatchResultStats;
+}
+
+/**
+ * Type guard to check if a MatchResultItem is a MatchedBook
+ */
+export function isMatchedBook(item: MatchResultItem): item is MatchedBook {
+  return item.type === "matched";
+}
+
+/**
+ * Type guard to check if a MatchResultItem is an UnmatchedLibraryBook
+ */
+export function isUnmatchedLibraryBook(
+  item: MatchResultItem
+): item is UnmatchedLibraryBook {
+  return item.type === "unmatched-library";
+}
+
+/**
+ * Type guard to check if a MatchResultItem is an UnmatchedIsbnBook
+ */
+export function isUnmatchedIsbnBook(
+  item: MatchResultItem
+): item is UnmatchedIsbnBook {
+  return item.type === "unmatched-isbn";
 }
 
 export function matchBookList(
@@ -28,31 +70,43 @@ export function matchBookList(
   isbnBooks: IsbnBookData[]
 ): MatchBookListResult {
   const unmatchedIsbnBooks = [...isbnBooks];
-  const booksExtended: MatchedBookData[] = libraryBooks.map((importedBook) => {
+  const results: MatchResultItem[] = [];
+
+  // Process library books and try to match them with ISBN books
+  for (const libraryBook of libraryBooks) {
     const isbnBookIndex = unmatchedIsbnBooks.findIndex((isbnBook) =>
-      isMatching(importedBook, isbnBook)
+      isMatching(libraryBook, isbnBook)
     );
+
     if (isbnBookIndex !== -1) {
       const isbnBook = unmatchedIsbnBooks[isbnBookIndex];
       unmatchedIsbnBooks.splice(isbnBookIndex, 1);
-      return {
-        ...importedBook,
+      results.push({
+        type: "matched",
+        libraryBook,
         matchedIsbnBook: isbnBook,
-      };
+      });
     } else {
-      return importedBook;
+      results.push({
+        type: "unmatched-library",
+        libraryBook,
+      });
     }
-  });
-  const matchedCount = booksExtended.filter((b) => b.matchedIsbnBook).length;
-  const stats = {
-    matchedBooks: matchedCount,
-    unmatchedBooks: libraryBooks.length - matchedCount,
-    extraneousIsbns: isbnBooks.length - matchedCount,
-  };
+  }
+
+  // Add remaining unmatched ISBN books
+  for (const isbnBook of unmatchedIsbnBooks) {
+    results.push({
+      type: "unmatched-isbn",
+      isbnBook,
+    });
+  }
+
+  const stats = matchResultStats(results);
+
   return {
-    books: booksExtended,
-    extraneousIsbns: unmatchedIsbnBooks,
-    stats: stats,
+    results,
+    stats,
   };
 }
 

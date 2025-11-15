@@ -2,11 +2,11 @@ import { CameraIcon, CameraOffIcon, ListRestartIcon } from "lucide-react";
 import { ActionButton } from "./ActionButton";
 import { FileUploadButton } from "./FileUploadButton";
 import {
-  ExtraneousIsbnPicto,
+  UnmatchedIsbnBookPicto,
   MatchedBookPicto,
-  ToMatchBookPicto,
+  UnmatchedLibraryBookPicto,
 } from "../BookList";
-import type { MatchBookStats } from "../books/match/matchBookList";
+import type { MatchResultStats } from "../books/match/matchResultStats";
 import { Divider, Loader } from "@mantine/core";
 
 export function AppBar({
@@ -20,7 +20,7 @@ export function AppBar({
 }: {
   onReset: () => void;
   fetching: boolean;
-  stats: MatchBookStats;
+  stats: MatchResultStats;
   scanning: boolean;
   startScanning: () => void;
   stopScanning: () => void;
@@ -46,10 +46,10 @@ export function AppBar({
       >
         <MatchedBookPicto />
         <span>: {stats.matchedBooks}&nbsp;</span>
-        <ToMatchBookPicto />
-        <span>: {stats.unmatchedBooks}&nbsp;</span>
-        <ExtraneousIsbnPicto />
-        <span>: {stats.extraneousIsbns}</span>
+        <UnmatchedLibraryBookPicto />
+        <span>: {stats.unmatchedLibraryBooks}&nbsp;</span>
+        <UnmatchedIsbnBookPicto />
+        <span>: {stats.unmatchedIsbnBooks}</span>
         {fetching ? (
           <Loader type="dots" size={16} style={{ margin: "0px 8px" }} />
         ) : (

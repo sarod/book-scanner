@@ -1,9 +1,13 @@
 import { Table, Tooltip } from "@mantine/core";
 import type {
   MatchBookListResult,
-  MatchedBookData,
+  MatchResultItem,
 } from "./books/match/matchBookList";
-import type { IsbnBookData } from "./books/isbn/IsbnBookData";
+import {
+  isMatchedBook,
+  isUnmatchedLibraryBook,
+  isUnmatchedIsbnBook,
+} from "./books/match/matchBookList";
 import {
   flexRender,
   getCoreRowModel,
@@ -19,82 +23,70 @@ import {
   ClockAlertIcon,
   ClockCheckIcon,
   ClockFadingIcon,
+  CrossIcon,
   ScanBarcodeIcon,
   TriangleAlertIcon,
 } from "lucide-react";
 import { useMemo } from "react";
 
-type BookData = MatchedBookData | IsbnBookData;
+type MatchResultItemType = MatchResultItem["type"];
 
-type MatchState = "matched" | "unmatched" | "extraneous";
-
-function isIsbnBook(bookData: BookData): bookData is IsbnBookData {
-  return "isbnCode" in bookData;
+function getType(matchResultItem: MatchResultItem): MatchResultItemType {
+  return matchResultItem.type;
 }
 
-const iconSize = 20;
-
-function getMatchState(bookData: BookData): MatchState {
-  if (isIsbnBook(bookData)) {
-    return "extraneous";
-  } else if (bookData.matchedIsbnBook) {
-    return "matched";
-  } else {
-    return "unmatched";
-  }
-}
-
-function getOverdue(bookData: BookData): boolean | null {
-  if (isIsbnBook(bookData)) {
+function getOverdue(bookData: MatchResultItem): boolean | null {
+  if (isUnmatchedIsbnBook(bookData)) {
     return null;
   } else {
-    return "overdue" in bookData && bookData.overdue;
+    return bookData.libraryBook.overdue;
   }
 }
 
-const columns: ColumnDef<BookData>[] = [
+function getTitle(book: MatchResultItem): string {
+  if (isMatchedBook(book)) {
+    return (
+      book.libraryBook.title +
+      " <=>" +
+      book.matchedIsbnBook.title +
+      (book.matchedIsbnBook.subtitle
+        ? " - " + book.matchedIsbnBook.subtitle
+        : "")
+    );
+  } else if (isUnmatchedLibraryBook(book)) {
+    return book.libraryBook.title;
+  } else {
+    return (
+      book.isbnBook.title +
+      (book.isbnBook.subtitle ? " - " + book.isbnBook.subtitle : "") +
+      " [" +
+      book.isbnBook.isbnCode +
+      "]"
+    );
+  }
+}
+
+const columns: ColumnDef<MatchResultItem>[] = [
   {
-    id: "match-state",
-    accessorFn: getMatchState,
+    id: "match-item-type",
+    accessorFn: getType,
     header: () => {
       return <ScanBarcodeIcon size={iconSize} />;
     },
     cell: (props) => {
-      switch (props.getValue()) {
-        case "extraneous":
-          return <ExtraneousIsbnPicto />;
+      switch (props.getValue() as MatchResultItemType) {
         case "matched":
           return <MatchedBookPicto />;
-        case "unmatched":
-          return <ToMatchBookPicto />;
+        case "unmatched-isbn":
+          return <UnmatchedIsbnBookPicto />;
+        case "unmatched-library":
+          return <UnmatchedLibraryBookPicto />;
       }
     },
   },
   {
     id: "title",
-    accessorFn: (book) => {
-      if (isIsbnBook(book)) {
-        return (
-          book.title +
-          (book.subtitle ? " - " + book.subtitle : "") +
-          " [" +
-          book.isbnCode +
-          "]"
-        );
-      } else {
-        if (book.matchedIsbnBook) {
-          return (
-            book.title +
-            " <=>" +
-            book.matchedIsbnBook.title +
-            (book.matchedIsbnBook.subtitle
-              ? " - " + book.matchedIsbnBook.subtitle
-              : "")
-          );
-        }
-        return book.title;
-      }
-    },
+    accessorFn: getTitle,
     header: "Title",
     cell: (props) => props.getValue(),
     meta: {
@@ -119,18 +111,16 @@ const columns: ColumnDef<BookData>[] = [
   },
 ];
 
-const iconColumns = ["return-state", "match-state"];
+const iconSize = 20;
+const iconColumns = ["return-state", "match-item-type"];
 
 export function BookList({ bookList }: { bookList: MatchBookListResult }) {
-  const data: BookData[] = useMemo(
-    () => [...bookList.books, ...bookList.extraneousIsbns],
-    [bookList]
-  );
+  const data: MatchResultItem[] = useMemo(() => bookList.results, [bookList]);
   const table = useReactTable({
     columns,
     data,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(), //client-side sorti
+    getSortedRowModel: getSortedRowModel(), //client-side sorting
     initialState: {
       sorting: [
         {
@@ -217,17 +207,24 @@ export function MatchedBookPicto() {
     </Tooltip>
   );
 }
-export function ToMatchBookPicto() {
+export function UnmatchedLibraryBookPicto() {
   return (
     <Tooltip label="To match">
       <BookDashedIcon size={iconSize} color="#1565C0" />
     </Tooltip>
   );
 }
-export function ExtraneousIsbnPicto() {
+export function FetchErrorIsbnPicto() {
   return (
     <Tooltip label="Scanned but not in list">
       <TriangleAlertIcon size={iconSize} color="#FBC02D" />
+    </Tooltip>
+  );
+}
+export function UnmatchedIsbnBookPicto() {
+  return (
+    <Tooltip label="Scanned but not in list">
+      <CrossIcon size={iconSize} color="#D32F2F" />
     </Tooltip>
   );
 }

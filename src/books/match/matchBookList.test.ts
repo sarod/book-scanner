@@ -1,5 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { matchBookList, normalizeVolumeNotation } from "./matchBookList";
+import {
+  matchBookList,
+  normalizeVolumeNotation,
+  type MatchedBook,
+  type UnmatchedLibraryBook,
+  type UnmatchedIsbnBook,
+} from "./matchBookList";
 import type { LibraryBookData } from "../library/LibraryBookData";
 import type { IsbnBookData } from "../isbn/IsbnBookData";
 
@@ -22,12 +28,15 @@ describe("matchBookList", () => {
 
     const result = matchBookList(importedBooks, isbnBooks);
 
-    expect(result.books).toHaveLength(1);
-    expect(result.books[0].matchedIsbnBook).toEqual(sampleIsbnBook);
-    expect(result.extraneousIsbns).toHaveLength(0);
+    expect(result.results).toHaveLength(1);
+    const matchedResult = result.results[0] as MatchedBook;
+    expect(matchedResult.type).toBe("matched");
+    expect(matchedResult.matchedIsbnBook).toEqual(sampleIsbnBook);
+    expect(matchedResult.libraryBook).toEqual(sampleImportedBook);
     expect(result.stats.matchedBooks).toBe(1);
-    expect(result.stats.unmatchedBooks).toBe(0);
-    expect(result.stats.extraneousIsbns).toBe(0);
+    expect(result.stats.unmatchedLibraryBooks).toBe(0);
+    expect(result.stats.unmatchedIsbnBooks).toBe(0);
+    expect(result.stats.total).toBe(1);
   });
 
   it("should match books on parts", () => {
@@ -40,9 +49,12 @@ describe("matchBookList", () => {
 
     const result = matchBookList([importedBook], isbnBooks);
 
-    expect(result.books[0].matchedIsbnBook).toEqual(sampleIsbnBook);
+    const matchedResult = result.results[0] as MatchedBook;
+    expect(matchedResult.type).toBe("matched");
+    expect(matchedResult.matchedIsbnBook).toEqual(sampleIsbnBook);
     expect(result.stats.matchedBooks).toBe(1);
   });
+
   it("should match book on normalized title", () => {
     const importedBook: LibraryBookData = {
       title: "A Song of Ice and Fire (6)",
@@ -57,8 +69,10 @@ describe("matchBookList", () => {
 
     const result = matchBookList([importedBook], [isbnBook]);
 
-    expect(result.books[0].matchedIsbnBook).toBe(isbnBook);
-    expect(result.extraneousIsbns).toHaveLength(0);
+    const matchedResult = result.results[0] as MatchedBook;
+    expect(matchedResult.type).toBe("matched");
+    expect(matchedResult.matchedIsbnBook).toBe(isbnBook);
+    expect(result.stats.unmatchedIsbnBooks).toBe(0);
   });
 
   it("should not match books with different titles", () => {
@@ -71,11 +85,13 @@ describe("matchBookList", () => {
 
     const result = matchBookList([importedBook], isbnBooks);
 
-    expect(result.books[0].matchedIsbnBook).toBeUndefined();
-    expect(result.extraneousIsbns).toHaveLength(1);
+    expect(result.results[0].type).toBe("unmatched-library");
+    const unmatchedLibrary = result.results[0] as UnmatchedLibraryBook;
+    expect(unmatchedLibrary.type).toBe("unmatched-library");
+    expect(unmatchedLibrary.libraryBook.title).toBe("Different Book");
     expect(result.stats.matchedBooks).toBe(0);
-    expect(result.stats.unmatchedBooks).toBe(1);
-    expect(result.stats.extraneousIsbns).toBe(1);
+    expect(result.stats.unmatchedLibraryBooks).toBe(1);
+    expect(result.stats.unmatchedIsbnBooks).toBe(1);
   });
 
   it("should handle multiple books with partial matches", () => {
@@ -92,15 +108,31 @@ describe("matchBookList", () => {
 
     const result = matchBookList(importedBooks, isbnBooks);
 
-    expect(result.books).toHaveLength(3);
-    expect(result.books[0].matchedIsbnBook?.isbnCode).toBe("1");
-    expect(result.books[1].matchedIsbnBook?.isbnCode).toBe("2");
-    expect(result.books[2].matchedIsbnBook).toBeUndefined();
-    expect(result.extraneousIsbns).toHaveLength(1);
-    expect(result.extraneousIsbns[0].isbnCode).toBe("3");
+    expect(result.results).toHaveLength(4); // 3 library books + 1 unmatched ISBN
+
+    // First result should be matched book
+    const matchedBook1 = result.results[0] as MatchedBook;
+    expect(matchedBook1.type).toBe("matched");
+    expect(matchedBook1.matchedIsbnBook.isbnCode).toBe("1");
+
+    // Second result should be matched book
+    const matchedBook2 = result.results[1] as MatchedBook;
+    expect(matchedBook2.type).toBe("matched");
+    expect(matchedBook2.matchedIsbnBook.isbnCode).toBe("2");
+
+    // Third result should be unmatched library book
+    const unmatchedLibrary = result.results[2] as UnmatchedLibraryBook;
+    expect(unmatchedLibrary.type).toBe("unmatched-library");
+    expect(unmatchedLibrary.libraryBook.title).toBe("Book Three");
+
+    // Fourth result should be unmatched ISBN book
+    const unmatchedIsbn = result.results[3] as UnmatchedIsbnBook;
+    expect(unmatchedIsbn.type).toBe("unmatched-isbn");
+    expect(unmatchedIsbn.isbnBook.isbnCode).toBe("3");
+
     expect(result.stats.matchedBooks).toBe(2);
-    expect(result.stats.unmatchedBooks).toBe(1);
-    expect(result.stats.extraneousIsbns).toBe(1);
+    expect(result.stats.unmatchedLibraryBooks).toBe(1);
+    expect(result.stats.unmatchedIsbnBooks).toBe(1);
   });
 
   it("should handle case insensitive matching", () => {
@@ -113,28 +145,32 @@ describe("matchBookList", () => {
 
     const result = matchBookList([importedBook], isbnBooks);
 
-    expect(result.books[0].matchedIsbnBook).toEqual(sampleIsbnBook);
+    const matchedResult = result.results[0] as MatchedBook;
+    expect(matchedResult.type).toBe("matched");
+    expect(matchedResult.matchedIsbnBook).toEqual(sampleIsbnBook);
   });
 
   it("should handle empty lists", () => {
     const result = matchBookList([], []);
 
-    expect(result.books).toHaveLength(0);
-    expect(result.extraneousIsbns).toHaveLength(0);
+    expect(result.results).toHaveLength(0);
     expect(result.stats.matchedBooks).toBe(0);
-    expect(result.stats.unmatchedBooks).toBe(0);
-    expect(result.stats.extraneousIsbns).toBe(0);
+    expect(result.stats.unmatchedLibraryBooks).toBe(0);
+    expect(result.stats.unmatchedIsbnBooks).toBe(0);
+    expect(result.stats.total).toBe(0);
   });
 
-  it("should handle extraneous ISBNs", () => {
+  it("should handle unmatched ISBNs", () => {
     const importedBooks: LibraryBookData[] = [];
     const isbnBooks: IsbnBookData[] = [sampleIsbnBook];
 
     const result = matchBookList(importedBooks, isbnBooks);
 
-    expect(result.books).toHaveLength(0);
-    expect(result.extraneousIsbns).toHaveLength(1);
-    expect(result.stats.extraneousIsbns).toBe(1);
+    expect(result.results).toHaveLength(1);
+    const unmatchedIsbn = result.results[0] as UnmatchedIsbnBook;
+    expect(unmatchedIsbn.type).toBe("unmatched-isbn");
+    expect(unmatchedIsbn.isbnBook).toEqual(sampleIsbnBook);
+    expect(result.stats.unmatchedIsbnBooks).toBe(1);
   });
 
   describe("normalizeVolumeNotation", () => {
