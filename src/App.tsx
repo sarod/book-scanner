@@ -5,8 +5,9 @@ import { MantineProvider } from "@mantine/core";
 import { Scanner } from "./scanner/Scanner";
 import {
   matchBookList,
-  type MatchBookListResult,
+  type MatchResultItem,
 } from "./books/match/matchBookList";
+import { matchResultStats } from "./books/match/matchResultStats";
 import { BookList } from "./BookList";
 import type { LibraryBookData } from "./books/library/LibraryBookData";
 import { parseBookFiles } from "./books/library/parseLibraryBookFIles";
@@ -22,9 +23,13 @@ function App() {
     setImportedBooks([]);
     isbnBooks.reset();
   }, [isbnBooks]);
-  const matchedBookList: MatchBookListResult = useMemo(
+  const matchedBookList: MatchResultItem[] = useMemo(
     () => matchBookList(importedBooks, isbnBooks.isbnBooks),
     [isbnBooks, importedBooks]
+  );
+  const stats = useMemo(
+    () => matchResultStats(matchedBookList),
+    [matchedBookList]
   );
   const onUpload = useCallback((files: File[]) => {
     parseBookFiles(files).then(
@@ -50,7 +55,7 @@ function App() {
           }}
           fetching={isbnBooks.fetching}
           onUpload={onUpload}
-          stats={matchedBookList.stats}
+          stats={stats}
         />
         {scanning && <Scanner onDetected={isbnBooks.addIsbnCode} />}
         {!scanning && <BookList bookList={matchedBookList} />}

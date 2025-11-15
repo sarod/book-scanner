@@ -1,8 +1,5 @@
 import { Table, Tooltip } from "@mantine/core";
-import type {
-  MatchBookListResult,
-  MatchResultItem,
-} from "./books/match/matchBookList";
+import type { MatchResultItem } from "./books/match/matchBookList";
 import {
   isMatchedBook,
   isUnmatchedLibraryBook,
@@ -114,8 +111,8 @@ const columns: ColumnDef<MatchResultItem>[] = [
 const iconSize = 20;
 const iconColumns = ["return-state", "match-item-type"];
 
-export function BookList({ bookList }: { bookList: MatchBookListResult }) {
-  const data: MatchResultItem[] = useMemo(() => bookList.results, [bookList]);
+export function BookList({ bookList }: { bookList: MatchResultItem[] }) {
+  const data: MatchResultItem[] = useMemo(() => bookList, [bookList]);
   const table = useReactTable({
     columns,
     data,

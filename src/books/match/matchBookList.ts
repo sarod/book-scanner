@@ -1,6 +1,5 @@
 import type { IsbnBookData } from "../isbn/IsbnBookData";
 import type { LibraryBookData } from "../library/LibraryBookData";
-import { type MatchResultStats, matchResultStats } from "./matchResultStats";
 
 /**
  * Union type for match results
@@ -35,11 +34,6 @@ export interface UnmatchedIsbnBook {
   isbnBook: IsbnBookData;
 }
 
-export interface MatchBookListResult {
-  results: MatchResultItem[];
-  stats: MatchResultStats;
-}
-
 /**
  * Type guard to check if a MatchResultItem is a MatchedBook
  */
@@ -68,7 +62,7 @@ export function isUnmatchedIsbnBook(
 export function matchBookList(
   libraryBooks: LibraryBookData[],
   isbnBooks: IsbnBookData[]
-): MatchBookListResult {
+): MatchResultItem[] {
   const unmatchedIsbnBooks = [...isbnBooks];
   const results: MatchResultItem[] = [];
 
@@ -102,12 +96,7 @@ export function matchBookList(
     });
   }
 
-  const stats = matchResultStats(results);
-
-  return {
-    results,
-    stats,
-  };
+  return results;
 }
 
 function isMatching(
