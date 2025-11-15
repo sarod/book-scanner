@@ -32,9 +32,8 @@ export function AppBar({
         accept="text/csv,text/plain"
         label="Upload book list"
         onUpload={onUpload}
-        disabled={scanning}
       />
-      <ActionButton label="Reset List" onClick={onReset} disabled={scanning}>
+      <ActionButton label="Reset List" onClick={onReset}>
         <ListRestartIcon size={24} />
       </ActionButton>
       <div
