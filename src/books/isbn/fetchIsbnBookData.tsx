@@ -21,11 +21,24 @@ interface VolumeInfo {
 }
 
 export async function fetchIsbnBookData(isbn: string): Promise<IsbnBookData> {
-  console.debug("fetchIsbnBookData:" + isbn);
   const response = await fetch(
     `https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`
   );
-  const volumes = (await response.json()) as VolumeListResponse;
+  if (response.status !== 200) {
+    const body = await response.text();
+    throw new Error(
+      "Received non 200 code while fetching ISBN " +
+        isbn +
+        ".\n" +
+        String(response.status) +
+        ":" +
+        response.statusText +
+        ".\nBody:" +
+        body
+    );
+  }
+  const jsonResponse: unknown = await response.json();
+  const volumes = jsonResponse as VolumeListResponse;
   if (volumes.items.length === 0) {
     throw new Error("No book found for ISBN " + isbn);
   }
