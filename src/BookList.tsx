@@ -20,7 +20,6 @@ import {
   ClockAlertIcon,
   ClockCheckIcon,
   ClockFadingIcon,
-  CrossIcon,
   OctagonAlertIcon,
   ScanBarcodeIcon,
   TriangleAlertIcon,
