@@ -1,19 +1,19 @@
-import { useCallback, useMemo, useState } from "react";
-import "./App.css";
-import "@mantine/core/styles.css";
-import { MantineProvider } from "@mantine/core";
-import { Scanner } from "./scanner/Scanner";
+import { useCallback, useMemo, useState } from 'react';
+import './App.css';
+import '@mantine/core/styles.css';
+import { MantineProvider } from '@mantine/core';
+import { Scanner } from './scanner/Scanner';
 import {
   matchBookList,
   type MatchResultItem,
-} from "./books/match/matchBookList";
-import { matchResultStats } from "./books/match/matchResultStats";
-import { BookList } from "./BookList";
-import type { LibraryBookData } from "./books/library/LibraryBookData";
-import { parseBookFiles } from "./books/library/parseLibraryBookFIles";
+} from './books/match/matchBookList';
+import { matchResultStats } from './books/match/matchResultStats';
+import { BookList } from './BookList';
+import type { LibraryBookData } from './books/library/LibraryBookData';
+import { parseBookFiles } from './books/library/parseLibraryBookFIles';
 
-import { AppBar } from "./toolbar/AppBar";
-import { useIsbnBooks } from "./useIsbnBooks";
+import { AppBar } from './toolbar/AppBar';
+import { useIsbnBooks } from './useIsbnBooks';
 
 function App() {
   const [importedBooks, setImportedBooks] = useState<LibraryBookData[]>([]);

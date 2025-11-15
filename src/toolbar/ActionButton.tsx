@@ -1,5 +1,5 @@
-import { Tooltip, ActionIcon } from "@mantine/core";
-import type { PropsWithChildren } from "react";
+import { Tooltip, ActionIcon } from '@mantine/core';
+import type { PropsWithChildren } from 'react';
 
 export function ActionButton({
   label,

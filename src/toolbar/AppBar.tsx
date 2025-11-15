@@ -1,13 +1,13 @@
-import { CameraIcon, CameraOffIcon, ListRestartIcon } from "lucide-react";
-import { ActionButton } from "./ActionButton";
-import { FileUploadButton } from "./FileUploadButton";
+import { CameraIcon, CameraOffIcon, ListRestartIcon } from 'lucide-react';
+import { ActionButton } from './ActionButton';
+import { FileUploadButton } from './FileUploadButton';
 import {
   UnmatchedIsbnBookPicto,
   MatchedBookPicto,
   UnmatchedLibraryBookPicto,
-} from "../BookList";
-import type { MatchResultStats } from "../books/match/matchResultStats";
-import { Divider, Loader } from "@mantine/core";
+} from '../BookList';
+import type { MatchResultStats } from '../books/match/matchResultStats';
+import { Divider, Loader } from '@mantine/core';
 
 export function AppBar({
   onReset,
@@ -38,10 +38,10 @@ export function AppBar({
       </ActionButton>
       <div
         style={{
-          margin: "auto",
-          fontSize: "1.2rem",
-          display: "flex",
-          alignItems: "center",
+          margin: 'auto',
+          fontSize: '1.2rem',
+          display: 'flex',
+          alignItems: 'center',
         }}
       >
         <MatchedBookPicto />
@@ -51,9 +51,9 @@ export function AppBar({
         <UnmatchedIsbnBookPicto />
         <span>: {stats.unmatchedIsbnBooks}</span>
         {fetching ? (
-          <Loader type="dots" size={16} style={{ margin: "0px 8px" }} />
+          <Loader type="dots" size={16} style={{ margin: '0px 8px' }} />
         ) : (
-          <div style={{ width: "16px", margin: "0px 8px" }}></div>
+          <div style={{ width: '16px', margin: '0px 8px' }}></div>
         )}
       </div>
 

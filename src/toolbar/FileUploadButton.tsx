@@ -1,6 +1,6 @@
-import { useRef } from "react";
-import { ActionButton } from "./ActionButton";
-import { FilePlusIcon } from "lucide-react";
+import { useRef } from 'react';
+import { ActionButton } from './ActionButton';
+import { FilePlusIcon } from 'lucide-react';
 
 export function FileUploadButton({
   label,
@@ -16,7 +16,7 @@ export function FileUploadButton({
   const inputRef = useRef<HTMLInputElement>(null);
   return (
     <>
-      {" "}
+      {' '}
       <ActionButton
         label={label}
         onClick={() => {
@@ -29,12 +29,12 @@ export function FileUploadButton({
       <input
         ref={inputRef}
         type="file"
-        style={{ display: "none" }}
+        style={{ display: 'none' }}
         accept={accept}
         multiple
         onChange={(e) => {
           onUpload(Array.from(e.target.files ?? []));
-          e.target.value = "";
+          e.target.value = '';
         }}
       />
     </>

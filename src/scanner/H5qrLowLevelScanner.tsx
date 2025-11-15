@@ -1,11 +1,11 @@
-import { useCallback, useRef, useState } from "react";
-import { Camera, StopCircle } from "lucide-react";
+import { useCallback, useRef, useState } from 'react';
+import { Camera, StopCircle } from 'lucide-react';
 
-import { ActionIcon } from "@mantine/core";
-import type { ScannerProps } from "./ScannerProps";
-import { Html5Qrcode, type Html5QrcodeCameraScanConfig } from "html5-qrcode";
+import { ActionIcon } from '@mantine/core';
+import type { ScannerProps } from './ScannerProps';
+import { Html5Qrcode, type Html5QrcodeCameraScanConfig } from 'html5-qrcode';
 
-const id = "h5qrc-scanner";
+const id = 'h5qrc-scanner';
 
 export default function H5qrLowLevelScanner({ onDetected }: ScannerProps) {
   const codeReaderRef = useRef<Html5Qrcode>(null);
@@ -15,7 +15,7 @@ export default function H5qrLowLevelScanner({ onDetected }: ScannerProps) {
     async function asyncStartScan() {
       const reader = new Html5Qrcode(id);
       const mediaContraints: MediaTrackConstraints = {
-        facingMode: "environment",
+        facingMode: 'environment',
       };
       const config: Html5QrcodeCameraScanConfig = {
         fps: 2,
@@ -33,7 +33,7 @@ export default function H5qrLowLevelScanner({ onDetected }: ScannerProps) {
           onDetected(decodedText);
         },
         (errorMessage, error) => {
-          console.debug("Code scan error", errorMessage, error);
+          console.debug('Code scan error', errorMessage, error);
         }
       );
       codeReaderRef.current = reader;
@@ -41,10 +41,10 @@ export default function H5qrLowLevelScanner({ onDetected }: ScannerProps) {
     }
     asyncStartScan().then(
       () => {
-        console.debug("start done");
+        console.debug('start done');
       },
       (error: unknown) => {
-        console.error("error starting", error);
+        console.error('error starting', error);
       }
     );
   }, [onDetected]);

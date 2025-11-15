@@ -1,5 +1,5 @@
-import type { IsbnBookData } from "../isbn/IsbnBookData";
-import type { LibraryBookData } from "../library/LibraryBookData";
+import type { IsbnBookData } from '../isbn/IsbnBookData';
+import type { LibraryBookData } from '../library/LibraryBookData';
 
 /**
  * Union type for match results
@@ -13,7 +13,7 @@ export type MatchResultItem =
  * A library book that has been matched with an ISBN book
  */
 export interface MatchedBook {
-  type: "matched";
+  type: 'matched';
   libraryBook: LibraryBookData;
   matchedIsbnBook: IsbnBookData;
 }
@@ -22,7 +22,7 @@ export interface MatchedBook {
  * A library book that could not be matched with any ISBN book
  */
 export interface UnmatchedLibraryBook {
-  type: "unmatched-library";
+  type: 'unmatched-library';
   libraryBook: LibraryBookData;
 }
 
@@ -30,7 +30,7 @@ export interface UnmatchedLibraryBook {
  * An ISBN book that could not be matched with any library book
  */
 export interface UnmatchedIsbnBook {
-  type: "unmatched-isbn";
+  type: 'unmatched-isbn';
   isbnBook: IsbnBookData;
 }
 
@@ -38,7 +38,7 @@ export interface UnmatchedIsbnBook {
  * Type guard to check if a MatchResultItem is a MatchedBook
  */
 export function isMatchedBook(item: MatchResultItem): item is MatchedBook {
-  return item.type === "matched";
+  return item.type === 'matched';
 }
 
 /**
@@ -47,7 +47,7 @@ export function isMatchedBook(item: MatchResultItem): item is MatchedBook {
 export function isUnmatchedLibraryBook(
   item: MatchResultItem
 ): item is UnmatchedLibraryBook {
-  return item.type === "unmatched-library";
+  return item.type === 'unmatched-library';
 }
 
 /**
@@ -56,7 +56,7 @@ export function isUnmatchedLibraryBook(
 export function isUnmatchedIsbnBook(
   item: MatchResultItem
 ): item is UnmatchedIsbnBook {
-  return item.type === "unmatched-isbn";
+  return item.type === 'unmatched-isbn';
 }
 
 export function matchBookList(
@@ -76,13 +76,13 @@ export function matchBookList(
       const isbnBook = unmatchedIsbnBooks[isbnBookIndex];
       unmatchedIsbnBooks.splice(isbnBookIndex, 1);
       results.push({
-        type: "matched",
+        type: 'matched',
         libraryBook,
         matchedIsbnBook: isbnBook,
       });
     } else {
       results.push({
-        type: "unmatched-library",
+        type: 'unmatched-library',
         libraryBook,
       });
     }
@@ -91,7 +91,7 @@ export function matchBookList(
   // Add remaining unmatched ISBN books
   for (const isbnBook of unmatchedIsbnBooks) {
     results.push({
-      type: "unmatched-isbn",
+      type: 'unmatched-isbn',
       isbnBook,
     });
   }
@@ -112,7 +112,7 @@ function isMatching(
   const libraryTitleParts = splitForFragmentsCompare(normalizedTitle);
   const isbnTitleFragments = [
     ...splitForFragmentsCompare(normalizedIsbnTitle),
-    ...splitForFragmentsCompare(normalizeForCompare(isbnBook.subtitle ?? "")),
+    ...splitForFragmentsCompare(normalizeForCompare(isbnBook.subtitle ?? '')),
   ];
 
   return libraryTitleParts.some((tp) => isbnTitleFragments.includes(tp));
@@ -132,8 +132,8 @@ function normalizeForCompare(s: string): string {
   return normalizeVolumeNotation(
     s
       .trim()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
       .toLowerCase()
   );
 }
@@ -155,7 +155,7 @@ export function normalizeVolumeNotation(s: string): string {
         vol2?: string;
       };
       const volumeNumber = Number(namedGroups.vol1 ?? namedGroups.vol2);
-      return (namedGroups.space ?? "") + "(" + volumeNumber.toString() + ")";
+      return (namedGroups.space ?? '') + '(' + volumeNumber.toString() + ')';
     }
   );
 }

@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { fetchIsbnBookData } from "./books/isbn/fetchIsbnBookData";
-import type { IsbnBookData } from "./books/isbn/IsbnBookData";
-import { isIsbn } from "./books/isbn/isIsbn";
+import { useState } from 'react';
+import { fetchIsbnBookData } from './books/isbn/fetchIsbnBookData';
+import type { IsbnBookData } from './books/isbn/IsbnBookData';
+import { isIsbn } from './books/isbn/isIsbn';
 
 export interface IsbnFetchError {
   isbnCode: string;
@@ -29,16 +29,16 @@ export function useIsbnBooks(): UseUsbnBooksResult {
 
   const addIsbnCode = (code: string) => {
     if (!isIsbn(code)) {
-      console.debug("Ignoring invalid isbn code " + code);
+      console.debug('Ignoring invalid isbn code ' + code);
       return;
     }
     if (isbnCodes.includes(code)) {
-      console.debug("Ignoring already added isbn code " + code);
+      console.debug('Ignoring already added isbn code ' + code);
       return;
     }
-    console.debug("Adding new valid isbn code " + code);
+    console.debug('Adding new valid isbn code ' + code);
     setIsbnCodes([...isbnCodes, code]);
-    console.debug("Fetching isbn data for code " + code);
+    console.debug('Fetching isbn data for code ' + code);
     fetchIsbnBookData(code).then(
       (isbnBook: IsbnBookData) => {
         setIsbnBooks((isbnBooks) => {
@@ -51,7 +51,7 @@ export function useIsbnBooks(): UseUsbnBooksResult {
       },
       (e: unknown) => {
         const message =
-          "Error fetching isbn data for code " + code + ":\n" + String(e);
+          'Error fetching isbn data for code ' + code + ':\n' + String(e);
         console.debug(message);
         const fetchError: IsbnFetchError = {
           isbnCode: code,

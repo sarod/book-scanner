@@ -1,4 +1,4 @@
-import type { LibraryBookData } from "./LibraryBookData";
+import type { LibraryBookData } from './LibraryBookData';
 
 const statusColumnIndex = 0;
 const titleColumnIndex = 1;
@@ -8,9 +8,9 @@ const headersLength = 3;
 export function isDecalogCSV(headers: string[]) {
   return (
     headers.length === headersLength &&
-    headers[statusColumnIndex] === "État" &&
-    headers[titleColumnIndex] === "Titre du document" &&
-    headers[infoColumnIndex] === "Informations"
+    headers[statusColumnIndex] === 'État' &&
+    headers[titleColumnIndex] === 'Titre du document' &&
+    headers[infoColumnIndex] === 'Informations'
   );
 }
 
@@ -19,7 +19,7 @@ export function parseDecalogCsv(
   rows: string[][]
 ): LibraryBookData[] {
   if (!isDecalogCSV(headers)) {
-    throw new Error("Not a decalog CSV");
+    throw new Error('Not a decalog CSV');
   }
   const books = rows
     .map((row) => {
@@ -35,7 +35,7 @@ function parseDecalogRow(row: string[]): LibraryBookData {
   const decaStatus = row[statusColumnIndex];
   const decaTitle = row[titleColumnIndex];
   const decaInfo = row[infoColumnIndex];
-  const overdue = decaStatus === "En retard";
+  const overdue = decaStatus === 'En retard';
 
   const { title, authors } = splitDecaTitle(decaTitle);
   const returnDate = extractReturnDateFromDecaInfo(decaInfo);
@@ -56,12 +56,12 @@ function splitDecaTitle(decaTitle: string): {
   // or like this <Title> par <authors> Publié en <publish date>
   const titleAndAuthor = removePublishInfo(decaTitle);
 
-  const splitAuthor = titleAndAuthor.split("par");
+  const splitAuthor = titleAndAuthor.split('par');
   if (splitAuthor.length !== 2) {
     return { title: titleAndAuthor.trim(), authors: [] };
   }
   const [title, authorsStr] = splitAuthor;
-  const authors = authorsStr.split(",").map((a) => a.trim());
+  const authors = authorsStr.split(',').map((a) => a.trim());
   return {
     title: title.trim(),
     authors,
@@ -87,11 +87,11 @@ function extractReturnDateFromDecaInfo(decaInfo: string): string | undefined {
 }
 
 function removePublishInfo(decaTitle: string): string {
-  const indexPublishedBy = decaTitle.lastIndexOf("Publié par");
+  const indexPublishedBy = decaTitle.lastIndexOf('Publié par');
   if (indexPublishedBy !== -1) {
     return decaTitle.slice(0, indexPublishedBy);
   }
-  const indexPublishedIn = decaTitle.lastIndexOf("Publié en");
+  const indexPublishedIn = decaTitle.lastIndexOf('Publié en');
   if (indexPublishedIn !== -1) {
     return decaTitle.slice(0, indexPublishedIn);
   }
@@ -108,7 +108,7 @@ function fixDecalogCsvRowLength(row: string[]): string[] {
     const extraCommas = row.length - headersLength;
     const fullTitle = row
       .slice(titleColumnIndex, titleColumnIndex + extraCommas)
-      .join(",");
+      .join(',');
     return [row[0], fullTitle, row[row.length - 1]];
   }
 }

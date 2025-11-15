@@ -1,4 +1,4 @@
-import type { IsbnBookData } from "./IsbnBookData";
+import type { IsbnBookData } from './IsbnBookData';
 
 interface VolumeListResponse {
   items: { volumeInfo: VolumeInfo }[];
@@ -27,20 +27,20 @@ export async function fetchIsbnBookData(isbn: string): Promise<IsbnBookData> {
   if (response.status !== 200) {
     const body = await response.text();
     throw new Error(
-      "Received non 200 code while fetching ISBN " +
+      'Received non 200 code while fetching ISBN ' +
         isbn +
-        ".\n" +
+        '.\n' +
         String(response.status) +
-        ":" +
+        ':' +
         response.statusText +
-        ".\nBody:" +
+        '.\nBody:' +
         body
     );
   }
   const jsonResponse: unknown = await response.json();
   const volumes = jsonResponse as VolumeListResponse;
   if (volumes.items.length === 0) {
-    throw new Error("No book found for ISBN " + isbn);
+    throw new Error('No book found for ISBN ' + isbn);
   }
   const volumeInfo = volumes.items[0].volumeInfo;
   return {

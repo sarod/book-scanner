@@ -1,6 +1,6 @@
-import { parse } from "papaparse";
-import type { LibraryBookData } from "./LibraryBookData";
-import { isDecalogCSV, parseDecalogCsv } from "./parseDecalogCsv";
+import { parse } from 'papaparse';
+import type { LibraryBookData } from './LibraryBookData';
+import { isDecalogCSV, parseDecalogCsv } from './parseDecalogCsv';
 
 export async function parseBookFiles(
   files: File[]
@@ -47,10 +47,10 @@ function parseUnknownCsv(
 ): LibraryBookData[] {
   const titleColumnIndex = headers.findIndex(
     (f) =>
-      f.toLowerCase().startsWith("titre") || f.toLowerCase().startsWith("title")
+      f.toLowerCase().startsWith('titre') || f.toLowerCase().startsWith('title')
   );
   if (titleColumnIndex === -1) {
-    throw new Error("No Title column found");
+    throw new Error('No Title column found');
   }
 
   return rows

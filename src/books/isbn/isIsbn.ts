@@ -4,7 +4,7 @@ export function isIsbn(code: string): boolean {
 }
 
 function isValidISBN13(code: string) {
-  if (!code.startsWith("978") && !code.startsWith("979")) {
+  if (!code.startsWith('978') && !code.startsWith('979')) {
     return false;
   }
   const checkDigitValid = isIsbn13CheckDigitValid(code);
@@ -12,7 +12,7 @@ function isValidISBN13(code: string) {
 }
 
 function isIsbn13CheckDigitValid(code: string): boolean {
-  const digits = code.split("").map((d) => Number.parseInt(d));
+  const digits = code.split('').map((d) => Number.parseInt(d));
   const sum = digits.reduce((total, digit, index) => {
     const weight = (index + 1) % 2 === 0 ? 3 : 1;
     return total + digit * weight;
@@ -22,8 +22,8 @@ function isIsbn13CheckDigitValid(code: string): boolean {
 
 function isValidISBN10(code: string): boolean {
   if (code.length !== 10) return false;
-  const digits = code.split("").map((d) => {
-    if (d === "X") {
+  const digits = code.split('').map((d) => {
+    if (d === 'X') {
       // Special case in ISBN 10
       return 10;
     }
@@ -37,5 +37,5 @@ function isValidISBN10(code: string): boolean {
 }
 
 export function removeHyphens(code: string): string {
-  return code.replaceAll("-", "");
+  return code.replaceAll('-', '');
 }

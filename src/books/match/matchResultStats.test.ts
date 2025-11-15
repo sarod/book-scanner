@@ -1,15 +1,15 @@
-import { describe, it, expect } from "vitest";
-import { matchResultStats } from "./matchResultStats";
-import type { MatchResultItem } from "./matchBookList";
-import type { LibraryBookData } from "../library/LibraryBookData";
-import type { IsbnBookData } from "../isbn/IsbnBookData";
+import { describe, it, expect } from 'vitest';
+import { matchResultStats } from './matchResultStats';
+import type { MatchResultItem } from './matchBookList';
+import type { LibraryBookData } from '../library/LibraryBookData';
+import type { IsbnBookData } from '../isbn/IsbnBookData';
 
-describe("matchResultStats", () => {
+describe('matchResultStats', () => {
   const createMatchedBook = (
     libraryBook: LibraryBookData,
     isbnBook: IsbnBookData
   ): MatchResultItem => ({
-    type: "matched",
+    type: 'matched',
     libraryBook,
     matchedIsbnBook: isbnBook,
   });
@@ -17,18 +17,18 @@ describe("matchResultStats", () => {
   const createUnmatchedLibraryBook = (
     libraryBook: LibraryBookData
   ): MatchResultItem => ({
-    type: "unmatched-library",
+    type: 'unmatched-library',
     libraryBook,
   });
 
   const createUnmatchedIsbnBook = (
     isbnBook: IsbnBookData
   ): MatchResultItem => ({
-    type: "unmatched-isbn",
+    type: 'unmatched-isbn',
     isbnBook,
   });
 
-  it("should return zero stats for empty results", () => {
+  it('should return zero stats for empty results', () => {
     const results: MatchResultItem[] = [];
     const stats = matchResultStats(results);
 
@@ -38,16 +38,16 @@ describe("matchResultStats", () => {
     expect(stats.total).toBe(0);
   });
 
-  it("should count matched books correctly", () => {
+  it('should count matched books correctly', () => {
     const libraryBook: LibraryBookData = {
-      title: "Test Book",
-      authors: ["Author"],
+      title: 'Test Book',
+      authors: ['Author'],
       overdue: false,
     };
     const isbnBook: IsbnBookData = {
-      isbnCode: "1234567890",
-      title: "Test Book",
-      authors: ["Author"],
+      isbnCode: '1234567890',
+      title: 'Test Book',
+      authors: ['Author'],
     };
 
     const results: MatchResultItem[] = [
@@ -64,15 +64,15 @@ describe("matchResultStats", () => {
     expect(stats.total).toBe(3);
   });
 
-  it("should count unmatched library books correctly", () => {
+  it('should count unmatched library books correctly', () => {
     const libraryBook1: LibraryBookData = {
-      title: "Book 1",
-      authors: ["Author 1"],
+      title: 'Book 1',
+      authors: ['Author 1'],
       overdue: false,
     };
     const libraryBook2: LibraryBookData = {
-      title: "Book 2",
-      authors: ["Author 2"],
+      title: 'Book 2',
+      authors: ['Author 2'],
       overdue: true,
     };
 
@@ -89,16 +89,16 @@ describe("matchResultStats", () => {
     expect(stats.total).toBe(2);
   });
 
-  it("should count unmatched ISBN books correctly", () => {
+  it('should count unmatched ISBN books correctly', () => {
     const isbnBook1: IsbnBookData = {
-      isbnCode: "1234567890",
-      title: "ISBN Book 1",
-      authors: ["Author 1"],
+      isbnCode: '1234567890',
+      title: 'ISBN Book 1',
+      authors: ['Author 1'],
     };
     const isbnBook2: IsbnBookData = {
-      isbnCode: "0987654321",
-      title: "ISBN Book 2",
-      authors: ["Author 2"],
+      isbnCode: '0987654321',
+      title: 'ISBN Book 2',
+      authors: ['Author 2'],
     };
 
     const results: MatchResultItem[] = [
@@ -114,16 +114,16 @@ describe("matchResultStats", () => {
     expect(stats.total).toBe(2);
   });
 
-  it("should count mixed result types correctly", () => {
+  it('should count mixed result types correctly', () => {
     const libraryBook: LibraryBookData = {
-      title: "Test Book",
-      authors: ["Author"],
+      title: 'Test Book',
+      authors: ['Author'],
       overdue: false,
     };
     const isbnBook: IsbnBookData = {
-      isbnCode: "1234567890",
-      title: "Test Book",
-      authors: ["Author"],
+      isbnCode: '1234567890',
+      title: 'Test Book',
+      authors: ['Author'],
     };
 
     const results: MatchResultItem[] = [
@@ -142,16 +142,16 @@ describe("matchResultStats", () => {
     expect(stats.total).toBe(5);
   });
 
-  it("should handle large arrays efficiently", () => {
+  it('should handle large arrays efficiently', () => {
     const libraryBook: LibraryBookData = {
-      title: "Test Book",
-      authors: ["Author"],
+      title: 'Test Book',
+      authors: ['Author'],
       overdue: false,
     };
     const isbnBook: IsbnBookData = {
-      isbnCode: "1234567890",
-      title: "Test Book",
-      authors: ["Author"],
+      isbnCode: '1234567890',
+      title: 'Test Book',
+      authors: ['Author'],
     };
 
     // Create large arrays

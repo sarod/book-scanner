@@ -1,11 +1,11 @@
-import { useCallback, useRef, useState } from "react";
-import { Camera, StopCircle } from "lucide-react";
+import { useCallback, useRef, useState } from 'react';
+import { Camera, StopCircle } from 'lucide-react';
 
-import { BrowserMultiFormatReader, NotFoundException } from "@zxing/library";
-import { ActionIcon } from "@mantine/core";
-import type { ScannerProps } from "./ScannerProps";
-import { closeMediaStream } from "./closeMediaStream";
-import { getUserMedia } from "./getUserMedia";
+import { BrowserMultiFormatReader, NotFoundException } from '@zxing/library';
+import { ActionIcon } from '@mantine/core';
+import type { ScannerProps } from './ScannerProps';
+import { closeMediaStream } from './closeMediaStream';
+import { getUserMedia } from './getUserMedia';
 
 export default function ZXingScanner({ onDetected }: ScannerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -15,17 +15,17 @@ export default function ZXingScanner({ onDetected }: ScannerProps) {
   const startScan = useCallback(() => {
     async function asyncStartScan() {
       if (!videoRef.current) {
-        throw new Error("no videoRef");
+        throw new Error('no videoRef');
       }
-      console.log("Requesting camera access...");
+      console.log('Requesting camera access...');
       const stream = await getUserMedia();
 
-      console.log("Configuring video feedback...");
+      console.log('Configuring video feedback...');
       videoRef.current.srcObject = stream;
-      console.log("Initializing code reader...");
+      console.log('Initializing code reader...');
       const codeReader = new BrowserMultiFormatReader();
       codeReaderRef.current = codeReader;
-      console.log("Initiatizing decode");
+      console.log('Initiatizing decode');
 
       await codeReader.decodeFromVideoContinuously(
         videoRef.current,
@@ -38,11 +38,11 @@ export default function ZXingScanner({ onDetected }: ScannerProps) {
           }
         }
       );
-      console.log("Scanning started.");
+      console.log('Scanning started.');
       setScanning(true);
     }
     asyncStartScan().catch((e: unknown) => {
-      console.error("start scan errors", e);
+      console.error('start scan errors', e);
     });
   }, [onDetected]);
   const stopScan = useCallback(() => {
@@ -89,7 +89,7 @@ export default function ZXingScanner({ onDetected }: ScannerProps) {
         autoPlay
         width="300"
         height="200"
-        style={{ visibility: scanning ? "visible" : "hidden" }}
+        style={{ visibility: scanning ? 'visible' : 'hidden' }}
       />
     </div>
   );

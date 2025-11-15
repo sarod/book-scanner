@@ -1,17 +1,17 @@
-import { TextInput, Button } from "@mantine/core";
-import { useForm } from "@mantine/form";
-import { isIsbn, removeHyphens } from "../books/isbn/isIsbn";
-import type { ScannerProps } from "./ScannerProps";
+import { TextInput, Button } from '@mantine/core';
+import { useForm } from '@mantine/form';
+import { isIsbn, removeHyphens } from '../books/isbn/isIsbn';
+import type { ScannerProps } from './ScannerProps';
 
-const examplesIsbn = ["978-2075187541", "978-0156013987", "2021508099"];
+const examplesIsbn = ['978-2075187541', '978-0156013987', '2021508099'];
 export function IsbnForm({ onDetected }: ScannerProps) {
   const form = useForm<{ code: string }>({
-    mode: "uncontrolled",
+    mode: 'uncontrolled',
     validateInputOnChange: true,
-    initialValues: { code: "" },
+    initialValues: { code: '' },
     validate: {
       code: (value) =>
-        !isIsbn(removeHyphens((value || "").trim())) ? "Invalid ISBN" : null,
+        !isIsbn(removeHyphens((value || '').trim())) ? 'Invalid ISBN' : null,
     },
   });
   return (
@@ -24,19 +24,19 @@ export function IsbnForm({ onDetected }: ScannerProps) {
       >
         <TextInput
           label="Code"
-          key={form.key("code")}
+          key={form.key('code')}
           autoComplete="true"
-          {...form.getInputProps("code")}
+          {...form.getInputProps('code')}
         />
         <Button type="submit">Send</Button>
       </form>
-      <div style={{ textAlign: "left" }}>
+      <div style={{ textAlign: 'left' }}>
         Example ISBN codes:
         <ul>
           {examplesIsbn.map((isbn) => (
             <li
               key={isbn}
-              style={{ cursor: "pointer" }}
+              style={{ cursor: 'pointer' }}
               onClick={() => {
                 onDetected(removeHyphens(isbn));
               }}

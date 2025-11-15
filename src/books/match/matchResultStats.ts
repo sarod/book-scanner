@@ -1,11 +1,11 @@
-import type { MatchResultItem } from "./matchBookList";
+import type { MatchResultItem } from './matchBookList';
 
 export function matchResultStats(results: MatchResultItem[]): MatchResultStats {
   return {
-    matchedBooks: results.filter((r) => r.type === "matched").length,
-    unmatchedLibraryBooks: results.filter((r) => r.type === "unmatched-library")
+    matchedBooks: results.filter((r) => r.type === 'matched').length,
+    unmatchedLibraryBooks: results.filter((r) => r.type === 'unmatched-library')
       .length,
-    unmatchedIsbnBooks: results.filter((r) => r.type === "unmatched-isbn")
+    unmatchedIsbnBooks: results.filter((r) => r.type === 'unmatched-isbn')
       .length,
     total: results.length,
   };

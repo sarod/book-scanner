@@ -1,17 +1,17 @@
-import { Table, Tooltip } from "@mantine/core";
-import type { MatchResultItem } from "./books/match/matchBookList";
+import { Table, Tooltip } from '@mantine/core';
+import type { MatchResultItem } from './books/match/matchBookList';
 import {
   isMatchedBook,
   isUnmatchedLibraryBook,
   isUnmatchedIsbnBook,
-} from "./books/match/matchBookList";
+} from './books/match/matchBookList';
 import {
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
   useReactTable,
   type ColumnDef,
-} from "@tanstack/react-table";
+} from '@tanstack/react-table';
 import {
   ArrowDownIcon,
   ArrowUpIcon,
@@ -23,23 +23,23 @@ import {
   OctagonAlertIcon,
   ScanBarcodeIcon,
   TriangleAlertIcon,
-} from "lucide-react";
-import { useMemo } from "react";
-import type { IsbnFetchError } from "./useIsbnBooks";
+} from 'lucide-react';
+import { useMemo } from 'react';
+import type { IsbnFetchError } from './useIsbnBooks';
 
 type BookListItem = MatchResultItem | IsbnFetchErrorItem;
 
 interface IsbnFetchErrorItem extends IsbnFetchError {
-  type: "isbn-fetch-error";
+  type: 'isbn-fetch-error';
 }
 
-type BookListItemType = BookListItem["type"];
+type BookListItemType = BookListItem['type'];
 
 function errorItem(fetchError: IsbnFetchError): IsbnFetchErrorItem {
-  return { ...fetchError, type: "isbn-fetch-error" };
+  return { ...fetchError, type: 'isbn-fetch-error' };
 }
 function isErrorItem(item: BookListItem): item is IsbnFetchErrorItem {
-  return item.type === "isbn-fetch-error";
+  return item.type === 'isbn-fetch-error';
 }
 
 function getType(item: BookListItem): BookListItemType {
@@ -60,63 +60,63 @@ function getTitle(item: BookListItem): string {
   } else if (isMatchedBook(item)) {
     return (
       item.libraryBook.title +
-      " <=>" +
+      ' <=>' +
       item.matchedIsbnBook.title +
       (item.matchedIsbnBook.subtitle
-        ? " - " + item.matchedIsbnBook.subtitle
-        : "")
+        ? ' - ' + item.matchedIsbnBook.subtitle
+        : '')
     );
   } else if (isUnmatchedLibraryBook(item)) {
     return item.libraryBook.title;
   } else {
     return (
       item.isbnBook.title +
-      (item.isbnBook.subtitle ? " - " + item.isbnBook.subtitle : "") +
-      " [" +
+      (item.isbnBook.subtitle ? ' - ' + item.isbnBook.subtitle : '') +
+      ' [' +
       item.isbnBook.isbnCode +
-      "]"
+      ']'
     );
   }
 }
 
 const columns: ColumnDef<BookListItem>[] = [
   {
-    id: "match-item-type",
+    id: 'match-item-type',
     accessorFn: getType,
     header: () => {
       return <ScanBarcodeIcon size={iconSize} />;
     },
     cell: (props) => {
       switch (props.getValue() as BookListItemType) {
-        case "matched":
+        case 'matched':
           return <MatchedBookPicto />;
-        case "unmatched-isbn":
+        case 'unmatched-isbn':
           return <UnmatchedIsbnBookPicto />;
-        case "unmatched-library":
+        case 'unmatched-library':
           return <UnmatchedLibraryBookPicto />;
-        case "isbn-fetch-error":
+        case 'isbn-fetch-error':
           return <FetchErrorIsbnPicto />;
       }
     },
   },
   {
-    id: "title",
+    id: 'title',
     accessorFn: getTitle,
-    header: "Title",
+    header: 'Title',
     cell: (props) => props.getValue(),
     meta: {
       largeColumn: true,
     },
   },
   {
-    id: "return-state",
+    id: 'return-state',
     accessorFn: getOverdue,
     header: () => {
       return <ClockFadingIcon size={iconSize} />;
     },
     cell: (props) => {
       if (props.getValue() == null) {
-        return "-";
+        return '-';
       } else if (props.getValue()) {
         return <ClockAlertIcon size={iconSize} color="#D32F2F" />;
       } else {
@@ -127,7 +127,7 @@ const columns: ColumnDef<BookListItem>[] = [
 ];
 
 const iconSize = 20;
-const iconColumns = ["return-state", "match-item-type"];
+const iconColumns = ['return-state', 'match-item-type'];
 
 export function BookList({
   matchList: bookList,
@@ -148,18 +148,18 @@ export function BookList({
     initialState: {
       sorting: [
         {
-          id: "return-state",
+          id: 'return-state',
           desc: true,
         },
         {
-          id: "title",
+          id: 'title',
           desc: false,
         },
       ],
     },
   });
   return (
-    <Table style={{ textAlign: "left", maxWidth: "100%" }}>
+    <Table style={{ textAlign: 'left', maxWidth: '100%' }}>
       <Table.Thead>
         {table.getHeaderGroups().map((headerGroup) => (
           <Table.Tr key={headerGroup.id}>
@@ -171,7 +171,7 @@ export function BookList({
                   style={
                     iconColumns.includes(header.id)
                       ? {
-                          width: "40px",
+                          width: '40px',
                         }
                       : {}
                   }
@@ -180,21 +180,21 @@ export function BookList({
                     <div
                       className={
                         header.column.getCanSort()
-                          ? "cursor-pointer select-none"
-                          : ""
+                          ? 'cursor-pointer select-none'
+                          : ''
                       }
                       onClick={header.column.getToggleSortingHandler()}
-                      style={{ display: "flex" }}
+                      style={{ display: 'flex' }}
                     >
                       {flexRender(
                         header.column.columnDef.header,
                         header.getContext()
                       )}
 
-                      {header.column.getIsSorted() === "asc" && (
+                      {header.column.getIsSorted() === 'asc' && (
                         <ArrowUpIcon size={iconSize} />
                       )}
-                      {header.column.getIsSorted() === "desc" && (
+                      {header.column.getIsSorted() === 'desc' && (
                         <ArrowDownIcon size={iconSize} />
                       )}
                     </div>
