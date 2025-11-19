@@ -1,4 +1,3 @@
-import js from '@eslint/js';
 import globals from 'globals';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
@@ -15,7 +14,7 @@ export default defineConfig([
       // Remove stylistic rules to avoid conflicts with Prettier
       // tseslint.configs.stylisticTypeChecked,
 
-      reactHooks.configs['recommended-latest'],
+      reactHooks.configs.flat['recommended-latest'],
       reactRefresh.configs.vite,
       prettier,
     ],
