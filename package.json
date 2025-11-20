@@ -13,11 +13,13 @@
     "preview": "vite preview",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "e2e": "pnpm playwright test",
     "prepare": "husky"
   },
   "dependencies": {
     "@mantine/core": "^8.3.5",
     "@mantine/form": "^8.3.6",
+    "@radix-ui/react-accessible-icon": "^1.1.8",
     "@tanstack/react-table": "^8.21.3",
     "@zxing/library": "^0.21.3",
     "html5-qrcode": "^2.3.8",
@@ -31,6 +33,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
+    "@playwright/test": "^1.56.1",
     "@types/node": "^24.6.0",
     "@types/papaparse": "^5.3.16",
     "@types/react": "^19.1.16",

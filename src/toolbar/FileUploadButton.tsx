@@ -7,11 +7,13 @@ export function FileUploadButton({
   onUpload,
   accept,
   disabled,
+  name,
 }: {
   label: string;
   onUpload: (files: File[]) => void;
   accept?: string;
   disabled?: boolean;
+  name?: string;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   return (
@@ -23,6 +25,7 @@ export function FileUploadButton({
           inputRef.current?.click();
         }}
         disabled={disabled}
+        name={name ? name + '-button' : undefined}
       >
         <FilePlusIcon size={24} />
       </ActionButton>
@@ -31,6 +34,8 @@ export function FileUploadButton({
         type="file"
         style={{ display: 'none' }}
         accept={accept}
+        name={name ? name + '-input' : undefined}
+        date-testid={name ? name + '-input' : undefined}
         multiple
         onChange={(e) => {
           onUpload(Array.from(e.target.files ?? []));

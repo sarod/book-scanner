@@ -29,6 +29,7 @@ export function AppBar({
   return (
     <div className="app-actions">
       <FileUploadButton
+        name="upload-list"
         accept="text/csv,text/plain"
         label="Upload book list"
         onUpload={onUpload}

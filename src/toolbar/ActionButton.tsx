@@ -6,10 +6,12 @@ export function ActionButton({
   onClick,
   children,
   disabled,
+  name,
 }: PropsWithChildren<{
   label: string;
   onClick: () => void;
   disabled?: boolean;
+  name?: string;
 }>) {
   return (
     <Tooltip label={label}>
@@ -19,6 +21,7 @@ export function ActionButton({
         aria-label={label}
         onClick={onClick}
         disabled={disabled}
+        name={name}
       >
         {children}
       </ActionIcon>

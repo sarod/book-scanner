@@ -24,8 +24,9 @@ import {
   ScanBarcodeIcon,
   TriangleAlertIcon,
 } from 'lucide-react';
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import type { IsbnFetchError } from './useIsbnBooks';
+import { AccessibleIcon } from '@radix-ui/react-accessible-icon';
 
 type BookListItem = MatchResultItem | IsbnFetchErrorItem;
 
@@ -118,9 +119,17 @@ const columns: ColumnDef<BookListItem>[] = [
       if (props.getValue() == null) {
         return '-';
       } else if (props.getValue()) {
-        return <ClockAlertIcon size={iconSize} color="#D32F2F" />;
+        return (
+          <LabeledIconWrapper label="Overdue">
+            <ClockAlertIcon size={iconSize} color="#D32F2F" />
+          </LabeledIconWrapper>
+        );
       } else {
-        return <ClockCheckIcon size={iconSize} />;
+        return (
+          <LabeledIconWrapper label="On time">
+            <ClockCheckIcon size={iconSize} />
+          </LabeledIconWrapper>
+        );
       }
     },
   },
@@ -177,6 +186,7 @@ export function BookList({
                   }
                 >
                   {header.isPlaceholder ? null : (
+                    // TODO Convert to action buton for accessibility
                     <div
                       className={
                         header.column.getCanSort()
@@ -224,31 +234,52 @@ export function BookList({
   );
 }
 
-export function MatchedBookPicto() {
+export function LabeledIconWrapper({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
   return (
-    <Tooltip label="Matched">
-      <BookCheckIcon size={iconSize} color="#388E3C" />
-    </Tooltip>
+    <AccessibleIcon label={label}>
+      <Tooltip label={label}>{children}</Tooltip>
+    </AccessibleIcon>
   );
 }
-export function UnmatchedLibraryBookPicto() {
+
+export function MatchedBookPicto() {
+  const label = 'Matched Book';
+
   return (
-    <Tooltip label="To match">
+    <LabeledIconWrapper label={label}>
+      <BookCheckIcon aria-label={label} size={iconSize} color="#388E3C" />
+    </LabeledIconWrapper>
+  );
+}
+
+export function UnmatchedLibraryBookPicto() {
+  const label = 'Unmatched Library Book';
+  return (
+    <LabeledIconWrapper label={label}>
       <BookDashedIcon size={iconSize} color="#1565C0" />
-    </Tooltip>
+    </LabeledIconWrapper>
   );
 }
 export function FetchErrorIsbnPicto() {
+  const label = 'Failed to fetch book data for isbn';
+
   return (
-    <Tooltip label="Failed to fetch book data for isbn">
+    <LabeledIconWrapper label={label}>
       <OctagonAlertIcon size={iconSize} color="#D32F2F" />
-    </Tooltip>
+    </LabeledIconWrapper>
   );
 }
 export function UnmatchedIsbnBookPicto() {
+  const label = 'Scanned but not in list';
   return (
-    <Tooltip label="Scanned but not in list">
+    <LabeledIconWrapper label={label}>
       <TriangleAlertIcon size={iconSize} color="#FBC02D" />
-    </Tooltip>
+    </LabeledIconWrapper>
   );
 }
