@@ -21,7 +21,7 @@
     "@mantine/form": "^8.3.6",
     "@radix-ui/react-accessible-icon": "^1.1.8",
     "@tanstack/react-table": "^8.21.3",
-    "@zxing/library": "^0.21.3",
+    "@yudiel/react-qr-scanner": "^2.4.1",
     "html5-qrcode": "^2.3.8",
     "lucide-react": "^0.554.0",
     "papaparse": "^5.5.3",
