@@ -23,7 +23,7 @@
     "@tanstack/react-table": "^8.21.3",
     "@zxing/library": "^0.21.3",
     "html5-qrcode": "^2.3.8",
-    "lucide-react": "^0.551.0",
+    "lucide-react": "^0.554.0",
     "papaparse": "^5.5.3",
     "postcss": "^8.5.6",
     "postcss-preset-mantine": "^1.18.0",
