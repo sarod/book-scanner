@@ -1,15 +1,14 @@
 import { test, expect, Page, Locator } from '@playwright/test';
 import path from 'path';
-const baseUrl = 'http://localhost:5173/book-scanner/';
 test('has expected Title', async ({ page }) => {
-  await page.goto(baseUrl);
+  await page.goto('/');
 
   // Expect a title "to contain" a substring.9
   await expect(page).toHaveTitle(/Book Scanner/);
 });
 
 test('load csv', async ({ page }) => {
-  await page.goto(baseUrl);
+  await page.goto('/');
 
   const __dirname = import.meta.dirname;
   const files = [path.join(__dirname, 'test-data/list1.csv')];
