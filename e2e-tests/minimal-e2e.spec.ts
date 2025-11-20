@@ -1,4 +1,4 @@
-import { test, expect, Page, Locator } from '@playwright/test';
+import { test, expect, type Page, type Locator } from '@playwright/test';
 import path from 'path';
 test('has expected Title', async ({ page }) => {
   await page.goto('/');
@@ -15,14 +15,14 @@ test('load csv', async ({ page }) => {
 
   await uploadLists(page, files);
 
-  const header = await page.getByRole('row').nth(0);
+  const header = page.getByRole('row').nth(0);
   await expect(header).toBeVisible();
 
-  const row0 = await page.getByRole('row').nth(1);
+  const row0 = page.getByRole('row').nth(1);
   await expect(row0).toBeVisible();
 
   await expectBookRow(row0, 'Unmatched Library Book', 'Livre 1', 'On time');
-  const row1 = await page.getByRole('row').nth(2);
+  const row1 = page.getByRole('row').nth(2);
   await expect(row1).toBeVisible();
   await expectBookRow(row1, 'Unmatched Library Book', 'Livre 2', 'On time');
 });
@@ -41,10 +41,10 @@ async function expectBookRow(
   );
 }
 
-async function uploadLists(page: Page, files: string[]) {
+async function uploadLists(page: Page, files: string[]): Promise<void> {
   const fileChooserPromise = page.waitForEvent('filechooser');
 
-  page.getByRole('button', { name: 'Upload book list' }).click();
+  await page.getByRole('button', { name: 'Upload book list' }).click();
   const fileChooser = await fileChooserPromise;
 
   await fileChooser.setFiles(files);

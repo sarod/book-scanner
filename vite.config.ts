@@ -5,6 +5,7 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   base: '/book-scanner/',
   plugins: [react()],
+
   server: {
     allowedHosts: ['97b70403687b.ngrok-free.app'],
   },
