@@ -43,28 +43,38 @@ function App() {
   }, []);
   return (
     <>
-      <MantineProvider defaultColorScheme="auto">
-        <AppBar
-          scanning={scanning}
-          onReset={reset}
-          startScanning={() => {
-            setScanning(true);
-          }}
-          stopScanning={() => {
-            setScanning(false);
-          }}
-          fetching={isbnBooks.fetching}
-          onUpload={onUpload}
-          stats={stats}
-        />
-        {scanning && <Scanner onDetected={isbnBooks.addIsbnCode} />}
-        {!scanning && (
-          <BookList
-            matchList={matchedBookList}
-            fetchErrors={isbnBooks.fetchErrors}
+      <main>
+        <MantineProvider defaultColorScheme="auto">
+          <h1>Book Scanner App</h1>
+
+          <AppBar
+            scanning={scanning}
+            onReset={reset}
+            startScanning={() => {
+              setScanning(true);
+            }}
+            stopScanning={() => {
+              setScanning(false);
+            }}
+            fetching={isbnBooks.fetching}
+            onUpload={onUpload}
+            stats={stats}
           />
-        )}
-      </MantineProvider>
+          {scanning && <Scanner onDetected={isbnBooks.addIsbnCode} />}
+          {!scanning && (
+            <BookList
+              matchList={matchedBookList}
+              fetchErrors={isbnBooks.fetchErrors}
+            />
+          )}
+        </MantineProvider>
+        {/* 
+        Create mantine defult portal target manually.
+        This is to avoid mantine creating it outside <main>
+        and generating a11y violations.
+        This target is used for instance by Tooltip and Select */}
+        <div data-portal="true" data-mantine-shared-portal-node="true"></div>
+      </main>
     </>
   );
 }

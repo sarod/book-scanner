@@ -1,4 +1,6 @@
 import { test, expect, type Page, type Locator } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright'; // 1
+
 import path from 'path';
 test('has expected Title', async ({ page }) => {
   await page.goto('/');
@@ -25,6 +27,10 @@ test('load csv', async ({ page }) => {
   const row1 = page.getByRole('row').nth(2);
   await expect(row1).toBeVisible();
   await expectBookRow(row1, 'Unmatched Library Book', 'Livre 2', 'On time');
+
+  const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
+
+  expect(accessibilityScanResults.violations, 'Check a11y').toEqual([]);
 });
 
 async function expectBookRow(
