@@ -84,9 +84,11 @@ const columns: ColumnDef<BookListItem>[] = [
   {
     id: 'match-item-type',
     accessorFn: getType,
-    header: () => {
-      return <ScanBarcodeIcon size={iconSize} />;
-    },
+    header: () => (
+      <LabeledIconWrapper label="Match Status">
+        <ScanBarcodeIcon size={iconSize} />
+      </LabeledIconWrapper>
+    ),
     cell: (props) => {
       switch (props.getValue() as BookListItemType) {
         case 'matched':
@@ -112,9 +114,11 @@ const columns: ColumnDef<BookListItem>[] = [
   {
     id: 'return-state',
     accessorFn: getOverdue,
-    header: () => {
-      return <ClockFadingIcon size={iconSize} />;
-    },
+    header: () => (
+      <LabeledIconWrapper label="Ontime/Overdue Status">
+        <ClockFadingIcon size={iconSize} />
+      </LabeledIconWrapper>
+    ),
     cell: (props) => {
       if (props.getValue() == null) {
         return '-';
