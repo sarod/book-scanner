@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import './App.css';
 import '@mantine/core/styles.css';
 import { MantineProvider } from '@mantine/core';
+import { useTranslation } from 'react-i18next';
 import { Scanner } from './scanner/Scanner';
 import {
   matchBookList,
@@ -16,6 +17,7 @@ import { AppBar } from './toolbar/AppBar';
 import { useIsbnBooks } from './useIsbnBooks';
 
 function App() {
+  const { t } = useTranslation();
   const [importedBooks, setImportedBooks] = useState<LibraryBookData[]>([]);
   const [scanning, setScanning] = useState(false);
   const isbnBooks = useIsbnBooks();
@@ -45,7 +47,9 @@ function App() {
     <>
       <main>
         <MantineProvider defaultColorScheme="auto">
-          <h1>Book Scanner App</h1>
+          <title>{t('app.title')}</title>
+
+          <h1>{t('app.title')}</h1>
 
           <AppBar
             scanning={scanning}

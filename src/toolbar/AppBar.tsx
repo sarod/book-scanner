@@ -8,6 +8,7 @@ import {
 } from '../BookList';
 import type { MatchResultStats } from '../books/match/matchResultStats';
 import { Divider, Loader } from '@mantine/core';
+import { useTranslation } from 'react-i18next';
 
 export function AppBar({
   onReset,
@@ -26,15 +27,17 @@ export function AppBar({
   stopScanning: () => void;
   onUpload: (files: File[]) => void;
 }) {
+  const { t } = useTranslation();
+
   return (
     <div className="app-actions">
       <FileUploadButton
         name="upload-list"
         accept="text/csv,text/plain"
-        label="Upload book list"
+        label={t('action.upload')}
         onUpload={onUpload}
       />
-      <ActionButton label="Reset List" onClick={onReset}>
+      <ActionButton label={t('action.reset')} onClick={onReset}>
         <ListRestartIcon size={24} />
       </ActionButton>
       <div
@@ -61,7 +64,7 @@ export function AppBar({
       <Divider orientation="vertical" />
       {scanning ? (
         <ActionButton
-          label="Stop scanning"
+          label={t('action.stop_scanning')}
           onClick={() => {
             stopScanning();
           }}
@@ -70,7 +73,7 @@ export function AppBar({
         </ActionButton>
       ) : (
         <ActionButton
-          label="Start scanning"
+          label={t('action.start_scanning')}
           onClick={() => {
             startScanning();
           }}

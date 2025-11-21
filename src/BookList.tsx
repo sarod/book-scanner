@@ -25,6 +25,7 @@ import {
   TriangleAlertIcon,
 } from 'lucide-react';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { IsbnFetchError } from './useIsbnBooks';
 import { AccessibleIcon } from '@radix-ui/react-accessible-icon';
 
@@ -80,65 +81,6 @@ function getTitle(item: BookListItem): string {
   }
 }
 
-const columns: ColumnDef<BookListItem>[] = [
-  {
-    id: 'match-item-type',
-    accessorFn: getType,
-    header: () => (
-      <LabeledIconWrapper label="Match Status">
-        <ScanBarcodeIcon size={iconSize} />
-      </LabeledIconWrapper>
-    ),
-    cell: (props) => {
-      switch (props.getValue() as BookListItemType) {
-        case 'matched':
-          return <MatchedBookPicto />;
-        case 'unmatched-isbn':
-          return <UnmatchedIsbnBookPicto />;
-        case 'unmatched-library':
-          return <UnmatchedLibraryBookPicto />;
-        case 'isbn-fetch-error':
-          return <FetchErrorIsbnPicto />;
-      }
-    },
-  },
-  {
-    id: 'title',
-    accessorFn: getTitle,
-    header: 'Title',
-    cell: (props) => props.getValue(),
-    meta: {
-      largeColumn: true,
-    },
-  },
-  {
-    id: 'return-state',
-    accessorFn: getOverdue,
-    header: () => (
-      <LabeledIconWrapper label="Ontime/Overdue Status">
-        <ClockFadingIcon size={iconSize} />
-      </LabeledIconWrapper>
-    ),
-    cell: (props) => {
-      if (props.getValue() == null) {
-        return '-';
-      } else if (props.getValue()) {
-        return (
-          <LabeledIconWrapper label="Overdue">
-            <ClockAlertIcon size={iconSize} color="#D32F2F" />
-          </LabeledIconWrapper>
-        );
-      } else {
-        return (
-          <LabeledIconWrapper label="On time">
-            <ClockCheckIcon size={iconSize} />
-          </LabeledIconWrapper>
-        );
-      }
-    },
-  },
-];
-
 const iconSize = 20;
 const iconColumns = ['return-state', 'match-item-type'];
 
@@ -149,15 +91,79 @@ export function BookList({
   matchList: MatchResultItem[];
   fetchErrors: IsbnFetchError[];
 }) {
+  const { t } = useTranslation();
   const data: BookListItem[] = useMemo(
     () => [...bookList, ...fetchErrors.map((e) => errorItem(e))],
     [bookList, fetchErrors]
   );
+
+  const columns = useMemo<ColumnDef<BookListItem>[]>(
+    () => [
+      {
+        id: 'match-item-type',
+        accessorFn: getType,
+        header: () => (
+          <LabeledIconWrapper label={t('booklist.match_status.header')}>
+            <ScanBarcodeIcon size={iconSize} />
+          </LabeledIconWrapper>
+        ),
+        cell: (props) => {
+          switch (props.getValue() as BookListItemType) {
+            case 'matched':
+              return <MatchedBookPicto />;
+            case 'unmatched-isbn':
+              return <UnmatchedIsbnBookPicto />;
+            case 'unmatched-library':
+              return <UnmatchedLibraryBookPicto />;
+            case 'isbn-fetch-error':
+              return <FetchErrorIsbnPicto />;
+          }
+        },
+      },
+      {
+        id: 'title',
+        accessorFn: getTitle,
+        header: t('booklist.item_title.header'),
+        cell: (props) => props.getValue(),
+        meta: {
+          largeColumn: true,
+        },
+      },
+      {
+        id: 'return-state',
+        accessorFn: getOverdue,
+        header: () => (
+          <LabeledIconWrapper label={t('booklist.return_state.header')}>
+            <ClockFadingIcon size={iconSize} />
+          </LabeledIconWrapper>
+        ),
+        cell: (props) => {
+          if (props.getValue() == null) {
+            return t('booklist.return_state.no_data');
+          } else if (props.getValue()) {
+            return (
+              <LabeledIconWrapper label={t('booklist.return_state.overdue')}>
+                <ClockAlertIcon size={iconSize} color="#D32F2F" />
+              </LabeledIconWrapper>
+            );
+          } else {
+            return (
+              <LabeledIconWrapper label={t('booklist.return_state.on_time')}>
+                <ClockCheckIcon size={iconSize} />
+              </LabeledIconWrapper>
+            );
+          }
+        },
+      },
+    ],
+    [t]
+  );
+
   const table = useReactTable({
     columns,
     data,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(), //client-side sorting
+    getSortedRowModel: getSortedRowModel(),
     initialState: {
       sorting: [
         {
@@ -253,7 +259,8 @@ export function LabeledIconWrapper({
 }
 
 export function MatchedBookPicto() {
-  const label = 'Matched Book';
+  const { t } = useTranslation();
+  const label = t('booklist.match_status.matched_book');
 
   return (
     <LabeledIconWrapper label={label}>
@@ -263,7 +270,8 @@ export function MatchedBookPicto() {
 }
 
 export function UnmatchedLibraryBookPicto() {
-  const label = 'Unmatched Library Book';
+  const { t } = useTranslation();
+  const label = t('booklist.match_status.unmatched_library_book');
   return (
     <LabeledIconWrapper label={label}>
       <BookDashedIcon size={iconSize} color="#1565C0" />
@@ -271,7 +279,8 @@ export function UnmatchedLibraryBookPicto() {
   );
 }
 export function FetchErrorIsbnPicto() {
-  const label = 'Failed to fetch book data for isbn';
+  const { t } = useTranslation();
+  const label = t('booklist.match_status.fetch_error');
 
   return (
     <LabeledIconWrapper label={label}>
@@ -280,7 +289,8 @@ export function FetchErrorIsbnPicto() {
   );
 }
 export function UnmatchedIsbnBookPicto() {
-  const label = 'Scanned but not in list';
+  const { t } = useTranslation();
+  const label = t('booklist.match_status.unmatched_isbn_book');
   return (
     <LabeledIconWrapper label={label}>
       <TriangleAlertIcon size={iconSize} color="#FBC02D" />
