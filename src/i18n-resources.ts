@@ -24,4 +24,32 @@ export const i18nResources = {
       'action.upload': 'Upload book list',
     },
   },
+  fr: {
+    translation: {
+      // App titles and general
+      'app.title': 'Application de Scan de Livres',
+
+      // Book list related
+      'booklist.item_title.header': 'Liste des Livres',
+      'booklist.match_status.header': 'Statut de Correspondance',
+      'booklist.item_title.header_header': 'Titre',
+      'booklist.match_status.matched_book': 'Livre Correspondant',
+      'booklist.match_status.unmatched_library_book':
+        'Livre de Bibliothèque Non Correspondant',
+      'booklist.match_status.unmatched_isbn_book':
+        'Scanné mais pas dans la liste',
+      'booklist.match_status.fetch_error':
+        "Échec de la récupération des données du livre pour l'isbn",
+      'booklist.return_state.header': "Statut À l'Heure/En Retard",
+      'booklist.return_state.on_time': "À l'heure",
+      'booklist.return_state.overdue': 'En retard',
+      'booklist.return_state.no_data': '-',
+
+      // Actions
+      'action.reset': 'Réinitialiser',
+      'action.start_scanning': 'Commencer le Scan',
+      'action.stop_scanning': 'Arrêter le Scan',
+      'action.upload': 'Ajouter une liste des livres',
+    },
+  },
 };
