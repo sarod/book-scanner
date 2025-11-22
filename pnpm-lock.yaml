@@ -13,10 +13,10 @@ importers:
     dependencies:
       '@mantine/core':
         specifier: ^8.3.5
-        version: 8.3.8(@mantine/hooks@8.3.5(react@19.2.0))(@types/react@19.2.6)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        version: 8.3.9(@mantine/hooks@8.3.5(react@19.2.0))(@types/react@19.2.6)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@mantine/form':
         specifier: ^8.3.6
-        version: 8.3.8(react@19.2.0)
+        version: 8.3.9(react@19.2.0)
       '@radix-ui/react-accessible-icon':
         specifier: ^1.1.8
         version: 1.1.8(@types/react-dom@19.2.3(@types/react@19.2.6))(@types/react@19.2.6)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -350,15 +350,15 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@mantine/core@8.3.8':
-    resolution: {integrity: sha512-UM3Za7Yl0FzbZ2zPgHwNyCpLgtSqkAi8ku13+gRS/6JB0FjwSkMwibERUqQIpwqAHdR5KNmIohjuqHu8guJowg==}
+  '@mantine/core@8.3.9':
+    resolution: {integrity: sha512-ivj0Crn5N521cI2eWZBsBGckg0ZYRqfOJz5vbbvYmfj65bp0EdsyqZuOxXzIcn2aUScQhskfvzyhV5XIUv81PQ==}
     peerDependencies:
-      '@mantine/hooks': 8.3.8
+      '@mantine/hooks': 8.3.9
       react: ^18.x || ^19.x
       react-dom: ^18.x || ^19.x
 
-  '@mantine/form@8.3.8':
-    resolution: {integrity: sha512-V9/6Vk56ox9m5/gllmOjU/EEfBqxbABkZufvxrB7dgA+BLvvdSi/iS+t3FvbkRol5YcxiSRe83cN4HZTi9L04Q==}
+  '@mantine/form@8.3.9':
+    resolution: {integrity: sha512-G7eCo5TEWGcsWHrNGwp/o1yPcCYbaMdLq6SClN+wMhAA+qaEO1ZHf9mX8fSOX78nkaoyIrZHGOhbVXcZ7hmVrQ==}
     peerDependencies:
       react: ^18.x || ^19.x
 
@@ -2167,7 +2167,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@mantine/core@8.3.8(@mantine/hooks@8.3.5(react@19.2.0))(@types/react@19.2.6)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
+  '@mantine/core@8.3.9(@mantine/hooks@8.3.5(react@19.2.0))(@types/react@19.2.6)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
     dependencies:
       '@floating-ui/react': 0.27.16(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@mantine/hooks': 8.3.5(react@19.2.0)
@@ -2181,7 +2181,7 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
 
-  '@mantine/form@8.3.8(react@19.2.0)':
+  '@mantine/form@8.3.9(react@19.2.0)':
     dependencies:
       fast-deep-equal: 3.1.3
       klona: 2.0.6
