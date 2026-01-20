@@ -25,7 +25,7 @@ importers:
         version: 8.21.3(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@yudiel/react-qr-scanner':
         specifier: ^2.4.1
-        version: 2.5.0(@types/emscripten@1.41.5)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        version: 2.5.1(@types/emscripten@1.41.5)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       html5-qrcode:
         specifier: ^2.3.8
         version: 2.3.8
@@ -659,8 +659,8 @@ packages:
   '@vitest/utils@4.0.17':
     resolution: {integrity: sha512-RG6iy+IzQpa9SB8HAFHJ9Y+pTzI+h8553MrciN9eC6TFBErqrQaTas4vG+MVj8S4uKk8uTT2p0vgZPnTdxd96w==}
 
-  '@yudiel/react-qr-scanner@2.5.0':
-    resolution: {integrity: sha512-wVWvm0z5kGGc3tiMcxyr2aji3C6aU5K3Q7R08MOdyFDFkvMbFMF1Hz5P5WFYW+zuuqxDPBcRZPCvmVs6jBheTQ==}
+  '@yudiel/react-qr-scanner@2.5.1':
+    resolution: {integrity: sha512-FWzHaCneu30mQpE80VNWx4IPtBjXFEiTzhwWunZy3afvvAy/x0aVIgYijJKEbROoaAeDfcJ/gIyUCqPBP7bMOw==}
     peerDependencies:
       react: ^17 || ^18 || ^19
       react-dom: ^17 || ^18 || ^19
@@ -2375,7 +2375,7 @@ snapshots:
       '@vitest/pretty-format': 4.0.17
       tinyrainbow: 3.0.3
 
-  '@yudiel/react-qr-scanner@2.5.0(@types/emscripten@1.41.5)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+  '@yudiel/react-qr-scanner@2.5.1(@types/emscripten@1.41.5)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       barcode-detector: 3.0.8(@types/emscripten@1.41.5)
       react: 19.2.3
