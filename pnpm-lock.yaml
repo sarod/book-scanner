@@ -37,7 +37,7 @@ importers:
         version: 1.14.0(react@19.2.6)
       papaparse:
         specifier: ^5.5.3
-        version: 5.5.3
+        version: 5.5.4
       postcss:
         specifier: ^8.5.6
         version: 8.5.15
@@ -1224,8 +1224,8 @@ packages:
     resolution: {integrity: sha512-LaNjtRWUBY++zB5nE/NwcaoMylSPk+S+ZHNB1TzdbMJMny6dynpAGt7X/tl/QYq3TIeE6nxHppbo2LGymrG5Pw==}
     engines: {node: '>=10'}
 
-  papaparse@5.5.3:
-    resolution: {integrity: sha512-5QvjGxYVjxO59MGU2lHVYpRWBBtKHnlIAcSe1uNFCkkptUh63NFRj0FJQm7nR67puEruUci/ZkjmEFrjCAyP4A==}
+  papaparse@5.5.4:
+    resolution: {integrity: sha512-SwzWD9gl/ElwYLCI0nUja1mFJzjq2D8ziShfNBa7zCHzkOozeOGDwHWQ+tvCzEZcewecWZ5U7kUopDnG+DFYEQ==}
 
   path-exists@4.0.0:
     resolution: {integrity: sha512-ak9Qy5Q7jYb2Wwcey5Fpvg2KoAc/ZIhLSLOSBmRmygPsGwkVVt0fZa0qrtMz+m6tJTAHfZQ8FnmB4MG4LWy7/w==}
@@ -2772,7 +2772,7 @@ snapshots:
     dependencies:
       p-limit: 3.1.0
 
-  papaparse@5.5.3: {}
+  papaparse@5.5.4: {}
 
   path-exists@4.0.0: {}
 
